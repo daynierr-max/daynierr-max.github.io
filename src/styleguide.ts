@@ -2,6 +2,32 @@
 import './styles/index.css';
 import './styles/styleguide.css';
 import { monogram, squirclePath } from './render/squircle.ts';
+import { appIcon, ICON_ORDER } from './render/icons.ts';
+
+const ICON_NAMES: Record<string, string> = {
+  infra: 'Infra y Azure',
+  security: 'Ciberseguridad',
+  ai: 'IA y MCP',
+  projects: 'Proyectos',
+  experience: 'Experiencia',
+  certs: 'Certificaciones',
+  terminal: 'Terminal',
+  contact: 'Contacto',
+};
+
+function iconsSection(): string {
+  const sheet = (theme: 'light' | 'dark') => `<div class="sg-iconsheet" data-theme="${theme}" data-sheet="${theme}">
+    <table><thead><tr><th scope="col">Icono</th><th scope="col">180</th><th scope="col">64</th><th scope="col">32</th></tr></thead><tbody>
+    ${ICON_ORDER.map((id) => `<tr><th scope="row">${ICON_NAMES[id]}</th><td>${appIcon(id, 180)}</td><td>${appIcon(id, 64)}</td><td>${appIcon(id, 32)}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  return `<section id="icons" class="sg-section"><h2>Iconos</h2>
+  <p class="sg-muted">Squircle real (superelipse n=5) · degradado de 2 tonos · glifo con extrusión en 3 capas y sombra propia · brillo especular · borde interior al 20 % · luz desde arriba-izquierda · ≤ 3 colores.</p>
+  <div class="sg-shelf-demo" data-theme="light"><div class="sg-shelf">${ICON_ORDER.map((id) => `<figure>${appIcon(id, 96)}<figcaption>${ICON_NAMES[id]}</figcaption></figure>`).join('')}</div></div>
+  <div class="sg-iconsheets">${sheet('light')}${sheet('dark')}</div>
+  <h3 class="sg-sub">1024 px</h3>
+  <div class="sg-icon1024">${ICON_ORDER.map((id) => `<figure data-icon="${id}">${appIcon(id, 1024, ICON_NAMES[id])}<figcaption>${ICON_NAMES[id]} · 1024</figcaption></figure>`).join('')}</div>
+</section>`;
+}
 
 const COLORS: [string, string][] = [
   ['--bg', 'Fondo'],
@@ -122,7 +148,7 @@ function render(): void {
   </div>
 </section>
 
-<section id="icons" class="sg-section"><h2>Iconos</h2><p class="sg-muted">Fase C.</p></section>`;
+${iconsSection()}`;
 
   for (const code of root.querySelectorAll<HTMLElement>('code[data-var]')) {
     code.textContent = getComputedStyle(code).getPropertyValue(code.dataset.var!).trim();

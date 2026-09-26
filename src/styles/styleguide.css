@@ -215,3 +215,106 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Iconos ── */
+.app-icon {
+  display: block;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.14)) drop-shadow(0 10px 18px rgb(0 0 0 / 0.14));
+}
+.sg-iconsheets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: var(--sp-5);
+  margin-top: var(--sp-8);
+}
+.sg-iconsheet {
+  padding: var(--sp-5);
+  border-radius: var(--r-card);
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: var(--ring), var(--shadow-1);
+  overflow-x: auto;
+}
+.sg-iconsheet table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.sg-iconsheet th,
+.sg-iconsheet td {
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: var(--fs-12);
+  color: var(--text-2);
+}
+.sg-iconsheet tbody th {
+  color: var(--text);
+  font-size: var(--fs-15);
+  font-weight: 600;
+}
+.sg-iconsheet tr + tr {
+  border-top: 1px solid var(--separator);
+}
+.sg-sub {
+  margin: var(--sp-12) 0 var(--sp-4);
+  font-size: var(--fs-22);
+}
+.sg-icon1024 {
+  display: grid;
+  gap: var(--sp-8);
+}
+.sg-icon1024 figure,
+.sg-shelf figure {
+  margin: 0;
+}
+.sg-icon1024 .app-icon {
+  max-width: 100%;
+  height: auto;
+}
+.sg-icon1024 figcaption,
+.sg-shelf figcaption {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--text-2);
+  text-align: center;
+}
+/* Estante de cristal con reflejo (inspirado en la presentación de galerías de iconos) */
+.sg-shelf-demo {
+  padding: var(--sp-8) var(--sp-5) var(--sp-5);
+  border-radius: var(--r-card);
+  background: var(--bg);
+  box-shadow: var(--ring);
+  overflow-x: auto;
+}
+.sg-shelf {
+  position: relative;
+  display: flex;
+  gap: var(--sp-6);
+  justify-content: center;
+  padding: 0 var(--sp-6);
+  min-width: max-content;
+}
+/* estante de cristal: su cara superior coincide con la base de los iconos */
+.sg-shelf::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 88px;
+  height: 22px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgb(125 211 252 / 0.28), rgb(255 255 255 / 0.55) 40%, rgb(196 181 253 / 0.32));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 -1px 0 rgb(0 0 0 / 0.04), 0 14px 28px rgb(0 0 0 / 0.07);
+  z-index: 1;
+}
+.sg-shelf .app-icon {
+  position: relative;
+  z-index: 2;
+  -webkit-box-reflect: below 2px linear-gradient(transparent 70%, rgb(255 255 255 / 0.22));
+}
+.sg-shelf figcaption {
+  position: relative;
+  z-index: 2;
+  margin-top: 44px;
+}
