@@ -5,3 +5,4 @@ test-results/
 playwright-report/
 docs/*.docx
 .DS_Store
+screenshots/
