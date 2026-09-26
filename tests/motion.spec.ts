@@ -52,7 +52,9 @@ test.describe('Movimiento', () => {
     const props = await page.evaluate(() => {
       const set = new Set<string>();
       // Solo animaciones CSS en bucle; las transiciones del hover (filter) son puntuales
-      for (const a of document.getAnimations().filter((x) => x instanceof CSSAnimation)) {
+      // (la expansión de la sala va ligada al scroll, no al tiempo: no es parte del bucle)
+      const scrollDriven = (x: Animation) => typeof ViewTimeline !== 'undefined' && x.timeline instanceof ViewTimeline;
+      for (const a of document.getAnimations().filter((x) => x instanceof CSSAnimation && !scrollDriven(x))) {
         const eff = a.effect as KeyframeEffect | null;
         for (const kf of eff?.getKeyframes() ?? []) {
           for (const k of Object.keys(kf)) if (!['offset', 'easing', 'composite', 'computedOffset'].includes(k)) set.add(k);

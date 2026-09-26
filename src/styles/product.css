@@ -149,14 +149,142 @@
   white-space: nowrap;
 }
 
-/* ── Tarjeta protagonista ── */
+/* ── Tarjeta protagonista: franja a sangre que se expande con el scroll ── */
 .hero {
+  --hero-s0: 0.92; /* escala inicial ≈ ancho del contenido / ancho de la ventana */
   margin-top: var(--sp-8);
 }
-.product .stage {
-  width: 100%;
-  min-width: 0;
-  margin: 0;
+@media (min-width: 768px) {
+  .hero {
+    --hero-s0: 0.86;
+  }
+}
+@media (min-width: 1200px) {
+  .hero {
+    --hero-s0: 0.8;
+  }
+}
+.hero-band {
+  position: relative;
+  padding: clamp(12px, 2.4vw, 36px) 0;
+  border-radius: clamp(20px, 2.4vw, 32px);
+  will-change: transform;
+  background:
+    radial-gradient(60% 70% at 45% 35%, #10204a 0%, transparent 70%),
+    radial-gradient(50% 50% at 85% 90%, rgb(255 181 71 / 0.06), transparent 70%),
+    #05070f;
+  transform-origin: 50% 50%;
+}
+.hero-band .stage {
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+/* Expansión ligada al scroll: de tarjeta redondeada a franja a sangre */
+@supports (animation-timeline: view()) {
+  .hero-band {
+    animation: hero-expand linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 50%;
+  }
+}
+/* Solo transform (medido en Chrome con GPU: animar también border-radius repintaba la franja
+   en cada frame y el scroll caía a ~40 fps; así se mantiene a 60). El radio queda fijo. */
+@keyframes hero-expand {
+  from {
+    transform: scale(var(--hero-s0));
+  }
+  to {
+    transform: none;
+  }
+}
+/* Alternativa sin animation-timeline (IntersectionObserver en main.ts) */
+.hero-band.js-expand {
+  transform: scale(var(--hero-s0));
+  transition: transform 0.8s var(--ease-out);
+}
+.hero-band.js-expand.is-expanded {
+  transform: none;
+}
+
+/* Inclinación 3D suave que sigue al puntero (≤ 6°, variables desde scene-fx.ts).
+   Rendimiento medido: inclinar una capa cuyo SVG se anima cada frame cae a ~25 fps. Por eso,
+   como un diorama que se coge para mirarlo, la sala se inclina con su bucle en pausa; al señalar
+   un objeto se endereza y solo ese objeto se anima (≈ 60 fps en ambos estados). */
+.stage-tilt {
+  transform: none;
+  transition: transform 0.6s var(--ease-out);
+}
+.hero-band.is-tilting:not(:has(.scene-svg.has-lit)) .stage-tilt {
+  transform: perspective(1800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+}
+.hero-band.is-tilting .scene-svg:not(.has-lit) * {
+  animation-play-state: paused;
+}
+
+/* Interruptor «Encender la luz» */
+.light-switch {
+  position: absolute;
+  z-index: 5;
+  top: clamp(12px, 2vw, 28px);
+  right: clamp(12px, 2vw, 28px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px 7px 8px;
+  border: 0;
+  border-radius: var(--r-pill);
+  /* cristal sin backdrop-filter: desenfocar una sala animada costaba ~15 fps */
+  background: linear-gradient(180deg, rgb(44 48 66 / 0.82), rgb(22 26 44 / 0.82));
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.22), 0 8px 24px rgb(0 0 0 / 0.35);
+  color: #f5f5f7;
+  font: 600 var(--fs-15) / 1 var(--font-sans);
+  cursor: pointer;
+}
+.light-switch:focus-visible {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4), 0 0 0 4px rgb(10 132 255 / 0.6);
+}
+.ls-track {
+  position: relative;
+  width: 40px;
+  height: 24px;
+  border-radius: 12px;
+  background: rgb(120 120 128 / 0.45);
+  transition: background-color var(--dur-1) var(--ease-out);
+}
+.ls-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.3);
+  transition: transform var(--dur-1) var(--ease-spring);
+}
+.light-switch[aria-checked='true'] .ls-track {
+  background: #ffb547;
+}
+.light-switch[aria-checked='true'] .ls-knob {
+  transform: translateX(16px);
+}
+@media (max-width: 767px) {
+  .light-switch {
+    padding: 5px 12px 5px 6px;
+    font-size: var(--fs-12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-band,
+  .hero-band.js-expand {
+    animation: none !important;
+    transform: none !important;
+  }
+  .stage-tilt {
+    transform: none !important;
+  }
 }
 
 /* ── Secciones ── */

@@ -28,18 +28,33 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.hotspot::before {
-  /* baliza: indica que el objeto es interactivo */
-  content: '';
+/* Hotspot de cristal: mini-icono de la familia de apps (sustituye a los puntos naranjas) */
+.hs-chip {
   position: absolute;
   left: 50%;
   top: var(--beacon-y, 8%);
-  width: 12px;
-  height: 12px;
-  margin-left: -6px;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  display: grid;
+  place-items: center;
   border-radius: 50%;
-  background: var(--amber);
-  box-shadow: 0 0 0 4px rgba(255, 181, 71, 0.25);
+  /* cristal sin backdrop-filter (9 desenfoques sobre una escena animada costaban ~15 fps) */
+  background: linear-gradient(180deg, rgb(52 58 82 / 0.78), rgb(18 22 40 / 0.78));
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22), inset 0 1px 0 rgb(255 255 255 / 0.28), 0 6px 16px rgb(0 0 0 / 0.35);
+  transition: transform var(--dur-1) var(--ease-spring);
+}
+.hs-chip svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+.hotspot:hover .hs-chip,
+.hotspot:focus-visible .hs-chip {
+  transform: scale(1.14);
+}
+.hotspot:focus-visible .hs-chip {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4), 0 0 0 3px var(--accent-fill);
 }
 .hotspot:focus-visible {
   box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.6), 0 0 0 4px rgb(10 132 255 / 0.6);
@@ -98,6 +113,7 @@
 /* ═════════ Fase 5 · Bucle ambiental (solo transform / opacity) ═════════ */
 .scene-svg .torso,
 .scene-svg .arm,
+.scene-svg .arm-stretch,
 .scene-svg .head-inner,
 .scene-svg .shield-body,
 .scene-svg .ring,
@@ -376,4 +392,51 @@ body:has(#panel[open]) .scene-svg * {
   .scene-svg .stars circle {
     animation: none;
   }
+}
+
+/* ═════════ «Encender la luz»: amanecer en la sala ═════════ */
+.scene-svg .room-warm {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+.scene-svg.lights-on .room-warm {
+  opacity: 1;
+}
+.scene-svg .screen-dim {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.scene-svg.lights-on .screen-dim {
+  opacity: 0.45;
+}
+.scene-svg .arm-stretch {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.scene-svg.lights-on .arm-type,
+.scene-svg.lights-on .arm-left {
+  opacity: 0;
+}
+.scene-svg.lights-on .arm-stretch {
+  opacity: 1;
+  transform-origin: 50% 100%;
+  animation: stretch 2.6s ease-in-out 1 both;
+}
+.scene-svg.lights-on #obj-about.is-active .arm-stretch {
+  opacity: 0;
+}
+@keyframes stretch {
+  0% { transform: translateY(18px) scaleY(0.7); }
+  35% { transform: translateY(-6px) scaleY(1.06); }
+  60% { transform: translateY(-3px) scaleY(1.02); }
+  100% { transform: none; }
+}
+.scene-svg.lights-on .torso {
+  /* estiramiento una vez y después vuelve a respirar */
+  animation: stretch-torso 2.6s ease-in-out 1, breath 4.2s ease-in-out 2.6s infinite;
+}
+@keyframes stretch-torso {
+  35% { transform: scale(1.02, 1.05); }
+  100% { transform: none; }
 }

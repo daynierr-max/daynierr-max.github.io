@@ -59,6 +59,7 @@ interface UI {
     more: string;
     less: string;
     sceneTitle: string;
+    lightOn: string;
     stats: { experience: string; years: string; yearsSub: string; certs: string; certsSub: string; location: string; languages: string; availability: string };
     appsTitle: string;
     appsLabel: string;
@@ -140,6 +141,7 @@ export const UI: Record<Lang, UI> = {
       more: 'más',
       less: 'menos',
       sceneTitle: 'La sala de operaciones',
+      lightOn: 'Encender la luz',
       stats: {
         experience: 'Experiencia',
         years: 'años',
@@ -237,6 +239,7 @@ export const UI: Record<Lang, UI> = {
       more: 'more',
       less: 'less',
       sceneTitle: 'The operations room',
+      lightOn: 'Turn on the light',
       stats: {
         experience: 'Experience',
         years: 'years',

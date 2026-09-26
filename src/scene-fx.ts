@@ -9,6 +9,7 @@ declare global {
       live: () => void;
       demo: (secondsPerDay?: number) => void;
       at: (hhmm: string) => { el: number; az: number };
+      dawn: () => string;
       sunPosition: (date: Date) => { el: number; az: number };
       readonly mode: string;
     };
@@ -358,22 +359,39 @@ function initSky(svg: SVGSVGElement): void {
       render(new Date(base.getTime() + frac * 864e5));
     }, 50);
   };
-  const at = (hhmm: string) => {
-    // hora de Madrid
-    stop();
-    mode = 'fixed';
-    const [h, m] = hhmm.split(':').map(Number);
+  // Fecha de hoy a una hora de Madrid (sea cual sea la zona del visitante)
+  const madridAt = (h: number, m: number) => {
     const now = new Date();
     const madrid = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
     const offset = madrid.getTime() - new Date(now.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
-    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), h, m) - offset);
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), h, m) - offset);
+  };
+  const at = (hhmm: string) => {
+    stop();
+    mode = 'fixed';
+    const [h, m] = hhmm.split(':').map(Number);
+    const d = madridAt(h, m);
     render(d);
     return sunPosition(d);
+  };
+  /** Amanecer de hoy en Madrid: primer minuto (paso de 5) con el sol a ≥ 4° de altura. */
+  const dawn = () => {
+    stop();
+    mode = 'dawn';
+    for (let t = 4 * 60; t <= 12 * 60; t += 5) {
+      const d = madridAt(Math.floor(t / 60), t % 60);
+      if (sunPosition(d).el >= 4) {
+        render(d);
+        return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+      }
+    }
+    return '';
   };
   window.skyCycle = {
     live,
     demo,
     at,
+    dawn,
     sunPosition,
     get mode() {
       return mode;
@@ -382,10 +400,66 @@ function initSky(svg: SVGSVGElement): void {
   live();
 }
 
+// ─────────────── Fase E · Tarjeta protagonista ───────────────
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+let heroObserver: IntersectionObserver | null = null;
+
+function initHero(svg: SVGSVGElement): void {
+  const band = document.querySelector<HTMLElement>('.hero-band');
+  const tilt = document.querySelector<HTMLElement>('.stage-tilt');
+  if (!band || !tilt) return;
+
+  // Expansión con el scroll: CSS animation-timeline; si no hay soporte, IntersectionObserver.
+  heroObserver?.disconnect();
+  if (!CSS.supports('animation-timeline: view()') && !reduced() && 'IntersectionObserver' in window) {
+    band.classList.add('js-expand');
+    heroObserver = new IntersectionObserver(([e]) => band.classList.toggle('is-expanded', e.intersectionRatio > 0.45), {
+      threshold: [0, 0.25, 0.45, 0.65, 1],
+    });
+    heroObserver.observe(band);
+  }
+
+  // Inclinación 3D (≤ 6°) que sigue al puntero: solo con ratón y sin movimiento reducido.
+  const MAX_Y = 5;
+  const MAX_X = 3.5;
+  let frame = 0;
+  band.addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse' || reduced()) return;
+    const r = band.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width - 0.5;
+    const ny = (e.clientY - r.top) / r.height - 0.5;
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      tilt.style.setProperty('--ry', `${(nx * 2 * MAX_Y).toFixed(2)}deg`);
+      tilt.style.setProperty('--rx', `${(-ny * 2 * MAX_X).toFixed(2)}deg`);
+    });
+  });
+  band.addEventListener('pointerenter', (e) => {
+    if (e.pointerType === 'mouse' && !reduced()) band.classList.add('is-tilting');
+  });
+  band.addEventListener('pointerleave', () => {
+    band.classList.remove('is-tilting');
+    cancelAnimationFrame(frame);
+    tilt.style.setProperty('--ry', '0deg');
+    tilt.style.setProperty('--rx', '0deg');
+  });
+
+  // «Encender la luz»: amanecer real de hoy en Madrid; al apagar vuelve a la hora real.
+  const sw = band.querySelector<HTMLButtonElement>('[data-light]');
+  sw?.addEventListener('click', () => {
+    const on = sw.getAttribute('aria-checked') !== 'true';
+    sw.setAttribute('aria-checked', String(on));
+    svg.classList.toggle('lights-on', on);
+    if (on) window.skyCycle?.dawn();
+    else window.skyCycle?.live();
+  });
+}
+
 export function initSceneFx(): void {
   const svg = document.querySelector<SVGSVGElement>('.scene-svg');
   if (!svg) return;
   initHover(svg);
   initSound();
   initSky(svg);
+  initHero(svg);
 }

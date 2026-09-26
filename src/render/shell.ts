@@ -27,20 +27,27 @@ export function renderShell(lang: Lang): string {
   </div>
 </header>
 <main id="main" tabindex="-1">
-  <div id="scene-view" class="product">
+  <div id="scene-view">
+   <div class="product">
     ${renderProductHead(lang)}
     ${renderStats(lang)}
+   </div>
     <section class="hero" aria-labelledby="hero-title">
       <h2 id="hero-title" class="sr-only">${esc(ui.product.sceneTitle)}</h2>
       <p class="sr-only">${esc(ui.sceneLabel)}</p>
-      ${renderScene(lang)}
+      <div class="hero-band">
+        <div class="stage-tilt">${renderScene(lang)}</div>
+        <button class="light-switch" type="button" role="switch" aria-checked="false" data-light><span class="ls-track" aria-hidden="true"><span class="ls-knob"></span></span><span class="ls-text">${esc(ui.product.lightOn)}</span></button>
+      </div>
     </section>
+   <div class="product">
     ${renderApps(lang)}
     ${renderPreview(lang)}
     ${renderNews(lang)}
     ${renderVersions(lang)}
     ${renderInfo(lang)}
     ${renderContact(lang)}
+   </div>
   </div>
   <section id="recruiter-view" hidden>
     ${renderRecruiter(lang)}

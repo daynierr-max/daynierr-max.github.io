@@ -67,6 +67,11 @@ Detalle completo en `PLAN_V2_APPSTORE.md`. Se presenta el perfil con el **lengua
 - Fondo más frío y menos contrastado. El rótulo «NIGHT OPS» se elimina o se convierte en un neón pequeño y sutil.
 - Amanecer («Encender la luz»): cielo cálido, pantallas atenuadas y el avatar se estira.
 - Se conservan las micro-interacciones por objeto: saludo, LEDs en secuencia, escudo «verified», cables, RRG, carpetas, chinchetas, cursor y ventana.
+- **Rendimiento del bloque E+F (medido con `npm run fps` en Chrome con GPU; ≥ 55 fps en bucle, hover, inclinación y scroll)**:
+  - Nada de `backdrop-filter` sobre la sala animada (chips e interruptor usan cristal semitransparente): desenfocar una escena que cambia cada frame costaba ~15 fps.
+  - La expansión con el scroll anima **solo `transform`** (+ `will-change`); animar `border-radius` repintaba la franja y el scroll caía a ~40 fps.
+  - La inclinación 3D es un «diorama»: al inclinarse, el bucle de la sala se pausa; al señalar un objeto se endereza y solo ese objeto se anima. Inclinar una capa que se anima cada frame caía a ~25 fps.
+  - El bloom usa un único filtro (`#f-bloom`) y solo sobre capas de brillo estáticas.
 - **Escena v2 (aplicada)**: avatar estilo figura de juguete (gorra, barba, auriculares cian), taza a la derecha del ratón, zamioculca en maceta cubo, hover que ilumina el objeto y atenúa el resto (con `opacity` y el bucle del resto en pausa, para mantener 60 fps), y **ciclo día/noche de 24 h con la posición real del sol en Madrid** (NOAA; ventana al oeste: el rayo directo solo entra por la tarde). Código en `src/scene-fx.ts`; desde la consola: `skyCycle.demo(60)`, `skyCycle.at('07:45')`, `skyCycle.live()`.
 
 ### Modo lectura (antes «modo reclutador»)

@@ -133,6 +133,28 @@ function enterReading(): void {
   syncRecruiter(true);
 }
 
+// Hojas con transición de «tarjeta que se expande» (View Transitions API) desde el icono pulsado.
+type VTDocument = Document & { startViewTransition?: (cb: () => void) => { finished: Promise<void> } };
+const canViewTransition = () =>
+  typeof (document as VTDocument).startViewTransition === 'function' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+const vtOrigin = (el: HTMLElement | null) => el?.querySelector<HTMLElement>('.app-icon, .hs-chip') ?? el;
+
+function withTransition(from: HTMLElement | null, to: HTMLElement | null, update: () => void): void {
+  if (!canViewTransition()) {
+    update();
+    return;
+  }
+  if (from) from.style.viewTransitionName = 'sheet';
+  const t = (document as VTDocument).startViewTransition!(() => {
+    if (from) from.style.viewTransitionName = '';
+    update();
+    if (to) to.style.viewTransitionName = 'sheet';
+  });
+  t.finished.finally(() => {
+    if (to) to.style.viewTransitionName = '';
+  });
+}
+
 function openPanel(id: SectionId, trigger: HTMLElement): void {
   const dialog = $<HTMLDialogElement>('#panel');
   const { kicker, title, body } = renderPanel(id, lang);
@@ -141,14 +163,32 @@ function openPanel(id: SectionId, trigger: HTMLElement): void {
   $('#panel-body').innerHTML = body;
   dialog.dataset.section = id;
   lastTrigger = trigger;
-  dialog.showModal();
-  $('#panel-body').scrollTop = 0;
   if (id === 'terminal') {
-    // Carga síncrona (≈0,7 KB): nada de lo que se teclee al abrir se pierde.
-    mountTerminal($('[data-terminal]'), lang, () => dialog.close());
-  } else {
-    $<HTMLButtonElement>('.panel-close').focus();
+    // Apertura inmediata y montaje síncrono: nada de lo que se teclee al abrir se pierde.
+    dialog.showModal();
+    mountTerminal($('[data-terminal]'), lang, closePanel);
+    return;
   }
+  withTransition(vtOrigin(trigger), dialog, () => {
+    dialog.classList.toggle('vt', canViewTransition());
+    dialog.showModal();
+    $('#panel-body').scrollTop = 0;
+    $<HTMLButtonElement>('.panel-close').focus();
+  });
+}
+
+function closePanel(): void {
+  const dialog = $<HTMLDialogElement>('#panel');
+  if (!dialog.open) return;
+  const origin = dialog.dataset.section === 'terminal' ? null : vtOrigin(lastTrigger);
+  if (!origin) {
+    dialog.close();
+    return;
+  }
+  withTransition(dialog, origin, () => {
+    dialog.close();
+    dialog.classList.remove('vt');
+  });
 }
 
 function activate(id: string | undefined, on: boolean): void {
@@ -204,11 +244,11 @@ function bind(): void {
       return;
     }
     if (t.closest('[data-close]')) {
-      $<HTMLDialogElement>('#panel').close();
+      closePanel();
       return;
     }
     // Clic en el fondo (fuera del contenido) cierra el panel.
-    if (t.id === 'panel') $<HTMLDialogElement>('#panel').close();
+    if (t.id === 'panel') closePanel();
   });
 
   for (const ev of ['pointerover', 'focusin'] as const) {
@@ -233,6 +273,17 @@ function bind(): void {
   );
 
   window.addEventListener('popstate', () => syncRecruiter());
+
+  // Esc: cierra con la misma transición de vuelta. El diálogo modal ya atrapa el foco.
+  document.addEventListener(
+    'cancel',
+    (e) => {
+      if ((e.target as HTMLElement).id !== 'panel' || !e.cancelable) return;
+      e.preventDefault();
+      closePanel();
+    },
+    true,
+  );
 
   // Sin elección guardada, el tema sigue al sistema en vivo.
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

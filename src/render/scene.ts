@@ -3,6 +3,8 @@ import type { Lang, SectionId } from '../types.ts';
 import { CVS, SECTION_ORDER, UI } from '../i18n.ts';
 import { esc } from './html.ts';
 import { zzPlant } from './zzplant.ts';
+import { appIcon } from './icons.ts';
+import { monogram } from './squircle.ts';
 import {
   box,
   hull,
@@ -74,6 +76,12 @@ const defs = `<defs>
   <linearGradient id="tf-cap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e3f66"/><stop offset="1" stop-color="#1b2644"/></linearGradient>
   <linearGradient id="g-patch" gradientUnits="userSpaceOnUse" x1="541" y1="640.6" x2="815" y2="792"><stop offset="0" stop-color="#ffd08a" stop-opacity=".42"/><stop offset="1" stop-color="#ffb547" stop-opacity=".2"/></linearGradient>
   <filter id="f-soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3"/></filter>
+  <linearGradient id="sh-side" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".07"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+  <linearGradient id="sh-top" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <radialGradient id="g-ao"><stop offset="0" stop-color="#01030a" stop-opacity=".62"/><stop offset=".6" stop-color="#01030a" stop-opacity=".22"/><stop offset="1" stop-color="#01030a" stop-opacity="0"/></radialGradient>
+  <filter id="f-bloom" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="9"/></filter>
+  <linearGradient id="g-haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7f9cff" stop-opacity=".1"/><stop offset=".7" stop-color="#7f9cff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="g-warm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf8f" stop-opacity=".42"/><stop offset=".55" stop-color="#ffb37a" stop-opacity=".2"/><stop offset="1" stop-color="#ffd29a" stop-opacity=".08"/></linearGradient>
 </defs>`;
 
 function room(): string {
@@ -87,20 +95,33 @@ function room(): string {
     grid.push(`M${a[0]},${a[1]}L${b[0]},${b[1]}`);
   }
   return `<g class="room">
-  ${box(0, 0, -0.4, W, D, 0.4, { top: C.floor, left: '#0b1430', right: '#08102a' })}
+  ${box(0, 0, -0.4, W, D, 0.4, { top: C.floor, left: '#0b1430', right: '#08102a' }, '', false)}
   ${poly([[0, 0, 0], [W, 0, 0], [W, D, 0], [0, D, 0]], 'url(#g-floor)')}
   <path d="${grid.join('')}" stroke="${C.floorLine}" stroke-width="1.2" opacity=".55" fill="none"/>
-  ${box(-0.35, -0.35, 0, W + 0.35, 0.35, H, { top: C.trim, left: 'url(#g-wallR)', right: '#1d2d5c' })}
-  ${box(-0.35, 0, 0, 0.35, D, H, { top: C.trim, left: '#1d2d5c', right: 'url(#g-wallL)' })}
+  ${box(-0.35, -0.35, 0, W + 0.35, 0.35, H, { top: C.trim, left: 'url(#g-wallR)', right: '#1d2d5c' }, '', false)}
+  ${box(-0.35, 0, 0, 0.35, D, H, { top: C.trim, left: '#1d2d5c', right: 'url(#g-wallL)' }, '', false)}
+  ${poly([[0, 0, 0], [W, 0, 0], [W, 0, H], [0, 0, H]], 'url(#g-haze)')}
+  ${poly([[0, 0, 0], [0, D, 0], [0, D, H], [0, 0, H]], 'url(#g-haze)')}
   ${poly([[0, 0, 0], [W, 0, 0], [W, 0, 0.28], [0, 0, 0.28]], '#0d1733')}
   ${poly([[0, 0, 0], [0, D, 0], [0, D, 0.28], [0, 0, 0.28]], '#0a1430')}
 </g>`;
 }
 
+// Sombra de contacto: elipse con degradado radial sobre el suelo (sin filtros de desenfoque).
+function ao(x: number, y: number, w: number, d: number, k = 1): string {
+  return `<g transform="${onPlaneZ(x - 0.25 * k, y - 0.25 * k, 0.004)}"><ellipse cx="${((w / 2 + 0.25 * k) * 100).toFixed(0)}" cy="${((d / 2 + 0.25 * k) * 100).toFixed(0)}" rx="${((w / 2 + 0.45 * k) * 100).toFixed(0)}" ry="${((d / 2 + 0.45 * k) * 100).toFixed(0)}" fill="url(#g-ao)"/></g>`;
+}
+
+function contactShadows(): string {
+  return `<g class="ao">${ao(0.02, 1.0, 1.13, 2.4)}${ao(0.15, 8.3, 1.3, 1.7)}${ao(9.1, 7.4, 1.0, 1.0, 0.7)}${ao(10.0, 1.4, 0.7, 0.7, 0.5)}</g>`;
+}
+
 function neon(): string {
-  return `<g class="neon" transform="${onPlaneY(4.75, 0.02, 6.0)}">
-  <text x="0" y="46" font-family="ui-monospace,Menlo,monospace" font-weight="800" font-size="48" letter-spacing="6" fill="none" stroke="${C.cyan}" stroke-width="10" opacity=".14">NIGHT OPS</text>
-  <text x="0" y="46" font-family="ui-monospace,Menlo,monospace" font-weight="800" font-size="48" letter-spacing="6" fill="#aef6ff" stroke="${C.cyan}" stroke-width="1.5">NIGHT OPS</text>
+  const text = (extra: string) =>
+    `<text x="0" y="30" font-family="ui-monospace,Menlo,monospace" font-weight="700" font-size="26" letter-spacing="5" ${extra}>NIGHT OPS</text>`;
+  return `<g class="neon" transform="${onPlaneY(1.15, 0.02, 2.12)}" opacity=".78">
+  ${text(`fill="${C.cyan}" opacity=".55" filter="url(#f-bloom)"`)}
+  ${text(`fill="#c6f7ff" stroke="${C.cyan}" stroke-width=".8"`)}
 </g>`;
 }
 
@@ -226,6 +247,7 @@ function rack(): string {
   ${box(0.15, 8.3, 0, 1.3, 1.7, 4.6, { top: '#2a3a63', left: '#18223d', right: '#0d1528' })}
   <g transform="${onPlaneX(1.45, 10, 4.6)}">
     <rect x="4" y="6" width="162" height="448" rx="3" fill="#070c18"/>
+    <rect x="104" y="18" width="48" height="420" rx="10" fill="${C.cyan}" opacity=".22" filter="url(#f-bloom)"/>
     ${units.join('')}
   </g>
 </g>`;
@@ -237,9 +259,11 @@ function wallScreen(id: SectionId, x: number, w: number, content: string): strin
   return `<g id="obj-${id}" class="obj">
   <ellipse cx="${c[0]}" cy="${c[1]}" rx="${w * 0.75}" ry="${w * 0.55}" fill="url(#g-cyanglow)" class="screen-glow"/>
   <g transform="${onPlaneY(x, 0.03, 4.8)}">
+    <rect x="-4" y="-4" width="${w + 8}" height="228" rx="8" fill="${C.cyan}" opacity=".3" filter="url(#f-bloom)"/>
     <rect x="-10" y="-10" width="${w + 20}" height="240" rx="6" fill="${C.bezel}"/>
     <rect x="0" y="0" width="${w}" height="220" fill="${C.screen}"/>
     <g class="flicker">${content}</g>
+    <rect class="screen-dim" x="0" y="0" width="${w}" height="220" fill="#05070f"/>
   </g>
 </g>`;
 }
@@ -331,7 +355,7 @@ function monitorScreen(x: number, seed: number): string {
     const indent = Math.floor(r() * 3) * 10;
     return `<rect class="code" style="--i:${i}" x="${10 + indent}" y="${12 + i * 11}" width="${(30 + r() * 80).toFixed(0)}" height="5" rx="2" fill="${colors[Math.floor(r() * colors.length)]}"/>`;
   }).join('');
-  return `<g transform="${onPlaneY(x + 0.05, 3.905, 2.5)}"><rect x="0" y="0" width="150" height="90" fill="${C.screen}"/><g class="flicker">${lines}</g></g>`;
+  return `<g transform="${onPlaneY(x + 0.05, 3.905, 2.5)}"><rect x="-2" y="-2" width="154" height="94" rx="4" fill="${C.cyan}" opacity=".26" filter="url(#f-bloom)"/><rect x="0" y="0" width="150" height="90" fill="${C.screen}"/><g class="flicker">${lines}</g><rect class="screen-dim" x="0" y="0" width="150" height="90" fill="#05070f"/></g>`;
 }
 
 function avatar(): string {
@@ -353,6 +377,14 @@ function avatar(): string {
     <path d="M24 -66 L48 -45" stroke="#3b5a8c" stroke-width="16" stroke-linecap="round"/>
     <path d="M50 -43 L90 -58" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
     <circle cx="94" cy="-58" r="8.5" fill="#d59a74"/>
+  </g>
+  <g class="arm arm-stretch">
+    <path d="M-20 -62 L-30 -96" stroke="#2c4470" stroke-width="16" stroke-linecap="round"/>
+    <path d="M-31 -99 L-26 -136" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
+    <circle cx="-25" cy="-142" r="8.5" fill="#c98d6a"/>
+    <path d="M24 -66 L34 -100" stroke="#3b5a8c" stroke-width="16" stroke-linecap="round"/>
+    <path d="M35 -103 L30 -140" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
+    <circle cx="29" cy="-146" r="8.5" fill="#d59a74"/>
   </g>
   <g class="arm arm-wave">
     <path d="M24 -66 L48 -92" stroke="#3b5a8c" stroke-width="16" stroke-linecap="round"/>
@@ -394,6 +426,7 @@ function deskArea(): string {
   return `<g class="floor-layer">
   <g transform="${onPlaneZ(3.5, 3.1, 0.01)}"><ellipse cx="260" cy="210" rx="270" ry="200" fill="#16244a" stroke="#22386b" stroke-width="3"/></g>
   <g class="beam-patch-wrap"><polygon class="beam-patch" points="${BEAM_PATCH}" fill="url(#g-patch)" filter="url(#f-soft)"/></g>
+  <g class="ao">${ao(4.2, 3.6, 4.0, 1.8, 0.6)}${ao(5.85, 5.85, 1.0, 0.95, 0.5)}</g>
 </g>
 <g id="obj-about" class="obj">
   ${leg(4.3, 3.7)}${leg(8.0, 3.7)}
@@ -464,6 +497,7 @@ export function renderScene(lang: Lang): string {
   const svg = `<svg class="scene-svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
 ${defs}
 ${room()}
+${contactShadows()}
 ${neon()}
 ${rrg()}
 ${nodes()}
@@ -476,12 +510,15 @@ ${deskArea()}
 ${terminal()}
 ${shield()}
 ${rack()}
+${poly([[0, 0, 0], [W, 0, 0], [W, D, 0], [0, D, 0]], 'url(#g-warm)', 'class="room-warm"')}
+${poly([[0, 0, 0], [W, 0, 0], [W, 0, H], [0, 0, H]], 'url(#g-warm)', 'class="room-warm"')}
+${poly([[0, 0, 0], [0, D, 0], [0, D, H], [0, 0, H]], 'url(#g-warm)', 'class="room-warm"')}
 </svg>`;
   const pct = (n: number, t: number) => `${((n / t) * 100).toFixed(2)}%`;
   const buttons = SECTION_ORDER.map((id) => {
     const b = screenBounds(HOTSPOTS[id].boxes);
     const s = ui.sections[id];
-    return `<button class="hotspot" type="button" data-open="${id}" aria-label="${esc(`${s.title}: ${s.object}`)}" style="left:${pct(b.x, VIEW_W)};top:${pct(b.y, VIEW_H)};width:${pct(b.w, VIEW_W)};height:${pct(b.h, VIEW_H)};z-index:${HOTSPOTS[id].z}${HOTSPOTS[id].beacon ? `;--beacon-y:${HOTSPOTS[id].beacon}%` : ''}"><span class="hs-label" aria-hidden="true">${esc(s.title)}</span></button>`;
+    return `<button class="hotspot" type="button" data-open="${id}" aria-label="${esc(`${s.title}: ${s.object}`)}" style="left:${pct(b.x, VIEW_W)};top:${pct(b.y, VIEW_H)};width:${pct(b.w, VIEW_W)};height:${pct(b.h, VIEW_H)};z-index:${HOTSPOTS[id].z}${HOTSPOTS[id].beacon ? `;--beacon-y:${HOTSPOTS[id].beacon}%` : ''}"><span class="hs-chip" aria-hidden="true">${id === 'about' ? monogram(22) : appIcon(id, 22)}</span><span class="hs-label" aria-hidden="true">${esc(s.title)}</span></button>`;
   }).join('');
   return `<div class="stage">${svg}<div class="hotspots">${buttons}</div></div>`;
 }
