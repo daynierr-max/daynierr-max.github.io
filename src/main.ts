@@ -3,6 +3,7 @@ import type { Lang, SectionId } from './types.ts';
 import { UI } from './i18n.ts';
 import { renderShell } from './render/shell.ts';
 import { renderPanel } from './render/panels.ts';
+import { mountTerminal } from './terminal.ts';
 
 const LANG_KEY = 'cv-lang';
 const THEME_KEY = 'cv-theme';
@@ -97,7 +98,7 @@ function hideHint(delay: number): void {
   window.setTimeout(() => document.querySelector('#hint')?.classList.add('is-hidden'), delay);
 }
 
-async function openPanel(id: SectionId, trigger: HTMLElement): Promise<void> {
+function openPanel(id: SectionId, trigger: HTMLElement): void {
   const dialog = $<HTMLDialogElement>('#panel');
   const { kicker, title, body } = renderPanel(id, lang);
   $('#panel-kicker').textContent = kicker;
@@ -108,9 +109,7 @@ async function openPanel(id: SectionId, trigger: HTMLElement): Promise<void> {
   dialog.showModal();
   $('#panel-body').scrollTop = 0;
   if (id === 'terminal') {
-    // Foco inmediato: lo que se teclee mientras carga el módulo no se pierde.
-    $<HTMLInputElement>('#term-input').focus();
-    const { mountTerminal } = await import('./terminal.ts');
+    // Carga síncrona (≈0,7 KB): nada de lo que se teclee al abrir se pierde.
     mountTerminal($('[data-terminal]'), lang, () => dialog.close());
   } else {
     $<HTMLButtonElement>('.panel-close').focus();
@@ -128,7 +127,7 @@ function bind(): void {
     const opener = t.closest<HTMLElement>('[data-open]');
     if (opener) {
       activate(opener.dataset.open, true);
-      void openPanel(opener.dataset.open as SectionId, opener);
+      openPanel(opener.dataset.open as SectionId, opener);
       return;
     }
     if (t.closest('#recruiter-toggle')) {
@@ -192,7 +191,7 @@ function bind(): void {
     if ((e.target as HTMLElement).closest('input, textarea') || $<HTMLDialogElement>('#panel').open) return;
     e.preventDefault();
     const trigger = document.querySelector<HTMLElement>('[data-open="terminal"]:not([hidden])') ?? document.body;
-    void openPanel('terminal', document.activeElement instanceof HTMLElement ? document.activeElement : trigger);
+    openPanel('terminal', document.activeElement instanceof HTMLElement ? document.activeElement : trigger);
   });
 }
 
