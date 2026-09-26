@@ -707,3 +707,107 @@ dialog#panel::backdrop {
     display: none;
   }
 }
+
+/* ───────── Escena isométrica ───────── */
+.stage {
+  position: relative;
+  width: min(100%, calc((100vh - var(--topbar-h) - 48px) * 1400 / 1060));
+  min-width: min(100%, 880px);
+  aspect-ratio: 1400 / 1060;
+  margin: 0 auto;
+}
+.scene-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.hotspots {
+  position: absolute;
+  inset: 0;
+}
+.hotspot {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.hotspot::before {
+  /* baliza: indica que el objeto es interactivo */
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(255, 181, 71, 0.25);
+}
+.hotspot:hover,
+.hotspot:focus-visible {
+  background: rgba(52, 224, 255, 0.07);
+  box-shadow: inset 0 0 0 2px rgba(52, 224, 255, 0.55);
+}
+.hotspot:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+.hs-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translate(-50%, 4px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--night-0);
+  border: 1px solid rgba(52, 224, 255, 0.5);
+  color: var(--ink);
+  font: 700 13px/1.2 var(--sans);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.hotspot:hover .hs-label,
+.hotspot:focus-visible .hs-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (min-width: 768px) {
+  .cards {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .stage {
+    width: calc(100% + 32px);
+    min-width: 0;
+    margin: 0 -16px 8px;
+  }
+  .hotspots {
+    display: none;
+  }
+}
+
+/* Estados por defecto de las micro-interacciones (se activan con .is-active) */
+.scene-svg .arm-wave,
+.scene-svg .face,
+.scene-svg .check,
+.scene-svg .verified {
+  opacity: 0;
+}
+.scene-svg .edge {
+  opacity: 0;
+}
+.scene-svg .rrg-path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}

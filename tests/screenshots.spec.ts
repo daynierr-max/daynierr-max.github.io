@@ -14,6 +14,10 @@ for (const s of sizes) {
     await page.waitForTimeout(3600); // deja que la pista inicial desaparezca
     await page.screenshot({ path: `screenshots/scene-${s.name}.png` });
     await page.screenshot({ path: `screenshots/scene-${s.name}-full.png`, fullPage: true });
+    await page.locator('[data-open="experience"]:visible').click();
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: `screenshots/panel-${s.name}.png` });
+    await page.keyboard.press('Escape');
     await page.locator('#recruiter-toggle').click();
     await page.screenshot({ path: `screenshots/recruiter-${s.name}.png` });
     await page.screenshot({ path: `screenshots/recruiter-${s.name}-full.png`, fullPage: true });
