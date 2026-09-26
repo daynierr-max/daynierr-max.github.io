@@ -1,24 +1,34 @@
 // Fase A (v2): correcciones rápidas.
 import { test, expect, type Page } from '@playwright/test';
 
+// Enlaces al PDF visibles dentro del viewport (lo que el visitante ve en ese momento)
 const visiblePdfLinks = (page: Page) =>
   page.locator('a[href$=".pdf"]').evaluateAll((els) =>
     els.filter((el) => {
       const r = (el as HTMLElement).getBoundingClientRect();
       const s = getComputedStyle(el);
-      return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && !(el as HTMLElement).closest('[hidden], [inert]');
+      const inView = r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+      return r.width > 0 && r.height > 0 && inView && s.visibility !== 'hidden' && !(el as HTMLElement).closest('[hidden], [inert]');
     }).length,
   );
 
 test.describe('Un solo botón de PDF por vista', () => {
-  test('sala, modo reclutador y panel de contacto', async ({ page }) => {
+  test('cabecera, mitad de página, contacto, panel y modo lectura', async ({ page }) => {
     await page.goto('/');
+    expect(await visiblePdfLinks(page)).toBe(1); // «Obtener CV» de la cabecera
+    await page.locator('#versions-title').scrollIntoViewIfNeeded();
+    await expect(page.locator('#pdf-link')).toBeVisible(); // la barra lo muestra al perder la cabecera
     expect(await visiblePdfLinks(page)).toBe(1);
+    await page.locator('#contact-title').scrollIntoViewIfNeeded();
+    await page.locator('.contact-actions [data-cta]').scrollIntoViewIfNeeded();
+    await expect(page.locator('#pdf-link')).toBeHidden();
+    expect(await visiblePdfLinks(page)).toBe(1); // «Obtener CV» del contacto
+    await page.evaluate(() => scrollTo(0, 0));
     await page.locator('.hotspot[data-open="contact"]').click();
-    const inPanel = await page.locator('#panel a[href$=".pdf"]').count();
-    expect(inPanel).toBe(0);
+    expect(await page.locator('#panel a[href$=".pdf"]').count()).toBe(0);
     await page.keyboard.press('Escape');
-    await page.locator('#recruiter-toggle').click();
+    await page.locator('[data-read]').click();
+    await expect(page.locator('#pdf-link')).toBeVisible();
     expect(await visiblePdfLinks(page)).toBe(1);
   });
 });

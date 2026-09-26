@@ -29,7 +29,7 @@ test.describe('Hotspots de la escena', () => {
 
     test(`«${title}» se abre con teclado (Tab + Enter)`, async ({ page }) => {
       await page.goto('/');
-      await page.locator('#pdf-link').focus();
+      await page.locator('[data-read]').focus();
       // Tab desde la barra superior hasta llegar al hotspot
       for (let i = 0; i < 20; i++) {
         await page.keyboard.press('Tab');

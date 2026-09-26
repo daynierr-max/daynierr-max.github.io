@@ -79,6 +79,8 @@ function setLang(next: Lang, keepFocus = false): void {
   if (panel?.open) panel.close();
   $('#app').innerHTML = renderShell(lang);
   initSceneFx();
+  watchCtas();
+  fillBundleSize();
   syncRecruiter();
   syncThemeButton();
   hideHint(0);
@@ -98,6 +100,37 @@ function syncHintText(): void {
 
 function hideHint(delay: number): void {
   window.setTimeout(() => document.querySelector('#hint')?.classList.add('is-hidden'), delay);
+}
+
+// «Descargar CV» de la barra solo aparece cuando no se ve ningún «Obtener CV» (un PDF por vista).
+let ctaObserver: IntersectionObserver | null = null;
+function watchCtas(): void {
+  ctaObserver?.disconnect();
+  const visible = new Set<Element>();
+  const ctas = document.querySelectorAll('[data-cta]');
+  if (!('IntersectionObserver' in window) || !ctas.length) {
+    document.body.classList.add('cta-out');
+    return;
+  }
+  ctaObserver = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) e.isIntersecting ? visible.add(e.target) : visible.delete(e.target);
+      document.body.classList.toggle('cta-out', visible.size === 0);
+    },
+    { rootMargin: '-56px 0px 0px 0px' },
+  );
+  ctas.forEach((c) => ctaObserver!.observe(c));
+}
+
+// Tamaño real de la web: lo calcula el build y lo deja en <meta name="x-bundle-size">.
+function fillBundleSize(): void {
+  const size = document.querySelector('meta[name="x-bundle-size"]')?.getAttribute('content') ?? '—';
+  document.querySelectorAll('[data-bundle-size]').forEach((el) => (el.textContent = size));
+}
+
+function enterReading(): void {
+  history.pushState(null, '', '#cv');
+  syncRecruiter(true);
 }
 
 function openPanel(id: SectionId, trigger: HTMLElement): void {
@@ -130,6 +163,30 @@ function bind(): void {
     if (opener) {
       activate(opener.dataset.open, true);
       openPanel(opener.dataset.open as SectionId, opener);
+      return;
+    }
+    if (t.closest('[data-read]')) {
+      enterReading();
+      return;
+    }
+    const more = t.closest<HTMLElement>('[data-more]');
+    if (more) {
+      const text = document.getElementById(more.getAttribute('aria-controls') ?? '');
+      const open = more.getAttribute('aria-expanded') !== 'true';
+      text?.classList.toggle('is-open', open);
+      more.setAttribute('aria-expanded', String(open));
+      more.textContent = (open ? more.dataset.lessLabel : more.dataset.moreLabel) ?? '';
+      return;
+    }
+    const nav = t.closest<HTMLElement>('[data-carousel]');
+    if (nav) {
+      const track = document.getElementById('carousel');
+      const card = track?.querySelector('li');
+      if (track && card) {
+        const step = card.getBoundingClientRect().width + 20;
+        const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+        track.scrollBy({ left: Number(nav.dataset.carousel) * step, behavior: smooth ? 'smooth' : 'auto' });
+      }
       return;
     }
     if (t.closest('#recruiter-toggle')) {
@@ -206,6 +263,8 @@ function init(): void {
     initSceneFx();
   }
   syncRecruiter();
+  watchCtas();
+  fillBundleSize();
   setTheme(storedTheme() ?? currentTheme(), false);
   syncHintText();
   hideHint(3000);

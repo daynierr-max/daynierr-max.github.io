@@ -3,7 +3,8 @@ import type { Lang } from '../types.ts';
 import { CVS, UI } from '../i18n.ts';
 import { esc, PDF_HREF } from './html.ts';
 import { renderRecruiter } from './recruiter.ts';
-import { renderScene, renderCards } from './scene.ts';
+import { renderScene } from './scene.ts';
+import { renderApps, renderContact, renderInfo, renderNews, renderPreview, renderProductHead, renderStats, renderVersions } from './product.ts';
 import { monogram } from './squircle.ts';
 
 // Iconos del conmutador de tema (trazos propios, estilo línea).
@@ -16,20 +17,31 @@ export function renderShell(lang: Lang): string {
   return `<a class="skip" href="#main" data-t="skip">${lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
 <header class="bar">
   <div class="bar-inner">
-    <h1 class="bar-brand">${monogram(28)}<span class="bar-name">${esc(cv.basics.name)}</span></h1>
+    <a class="bar-brand" href="#top">${monogram(28)}<span class="bar-name">${esc(cv.basics.name)}</span></a>
     <div class="bar-actions">
       <button id="lang-toggle" class="btn-icon" type="button" lang="${lang === 'es' ? 'en' : 'es'}"><span class="sr-only">${esc(ui.switchLang)}: </span>${esc(ui.switchLangShort)}</button>
       <button id="theme-toggle" class="btn-icon" type="button" aria-label="${esc(ui.themeDark)}" data-label-dark="${esc(ui.themeDark)}" data-label-light="${esc(ui.themeLight)}">${SUN}${MOON}</button>
-      <button id="recruiter-toggle" class="btn btn-secondary btn-sm" type="button" aria-pressed="false" aria-controls="recruiter-view">${esc(ui.recruiterMode)}</button>
-      <a id="pdf-link" class="btn btn-primary btn-sm" href="${PDF_HREF}" download aria-label="${esc(ui.downloadPdf)}"><span class="lbl-long">${esc(ui.downloadPdf.replace(/\s*CV$/, ''))} </span>CV</a>
+      <button id="recruiter-toggle" class="btn btn-secondary btn-sm bar-cta" type="button" aria-pressed="false" aria-controls="recruiter-view">${esc(ui.recruiterMode)}</button>
+      <a id="pdf-link" class="btn btn-primary btn-sm bar-cta" href="${PDF_HREF}" download aria-label="${esc(ui.downloadPdf)}"><span class="lbl-long">${esc(ui.downloadPdf.replace(/\s*CV$/, ''))} </span>CV</a>
     </div>
   </div>
 </header>
 <main id="main" tabindex="-1">
-  <section id="scene-view" aria-label="${esc(ui.sceneLabel)}">
-    ${renderScene(lang)}
-    ${renderCards(lang)}
-  </section>
+  <div id="scene-view" class="product">
+    ${renderProductHead(lang)}
+    ${renderStats(lang)}
+    <section class="hero" aria-labelledby="hero-title">
+      <h2 id="hero-title" class="sr-only">${esc(ui.product.sceneTitle)}</h2>
+      <p class="sr-only">${esc(ui.sceneLabel)}</p>
+      ${renderScene(lang)}
+    </section>
+    ${renderApps(lang)}
+    ${renderPreview(lang)}
+    ${renderNews(lang)}
+    ${renderVersions(lang)}
+    ${renderInfo(lang)}
+    ${renderContact(lang)}
+  </div>
   <section id="recruiter-view" hidden>
     ${renderRecruiter(lang)}
   </section>

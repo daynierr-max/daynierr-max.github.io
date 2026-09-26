@@ -69,11 +69,6 @@
   transform: translate(-50%, 0);
 }
 
-@media (min-width: 768px) {
-  .cards {
-    display: none;
-  }
-}
 @media (max-width: 767px) {
   .stage {
     width: 100%;

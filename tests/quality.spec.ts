@@ -10,7 +10,7 @@ test('sin errores de consola (CSP incluida) al cargar e interactuar', async ({ p
   await page.keyboard.press('Enter');
   await page.keyboard.press('Escape');
   await page.locator('#lang-toggle').click();
-  await page.locator('#recruiter-toggle').click();
+  await page.locator('[data-read]').click();
   expect(errors).toEqual([]);
 });
 

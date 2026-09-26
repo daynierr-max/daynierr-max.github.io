@@ -20,54 +20,6 @@
   box-shadow: var(--shadow-2), var(--ring);
 }
 
-/* ── Tarjetas-objeto (móvil) ── */
-.cards {
-  list-style: none;
-  margin: 0 auto;
-  padding: 0;
-  display: grid;
-  gap: var(--sp-3);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-  max-width: var(--page-max);
-}
-.card {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  text-align: left;
-  padding: var(--sp-4) var(--sp-5);
-  border: 0;
-  border-radius: var(--r-card);
-  background: var(--surface);
-  box-shadow: var(--shadow-1), var(--ring);
-  color: var(--text);
-  font: inherit;
-  cursor: pointer;
-  transition: transform var(--dur-1) var(--ease-spring);
-}
-.card:active {
-  transform: scale(0.98);
-}
-.card-kicker {
-  font-size: var(--fs-12);
-  font-weight: 600;
-  color: var(--text-2);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-.card-title {
-  font-size: var(--fs-22);
-  font-weight: 700;
-  letter-spacing: var(--track-title);
-  line-height: 1.2;
-}
-.card-teaser {
-  font-size: var(--fs-15);
-  color: var(--text-2);
-}
-
 /* ── Pista inicial ── */
 .hint {
   position: fixed;
