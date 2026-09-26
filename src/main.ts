@@ -131,6 +131,15 @@ function bind(): void {
   );
 
   window.addEventListener('popstate', () => syncRecruiter());
+
+  // Atajo oculto: la tecla ` (o ~) abre la terminal desde cualquier punto.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== '`' && e.key !== '~') return;
+    if ((e.target as HTMLElement).closest('input, textarea') || $<HTMLDialogElement>('#panel').open) return;
+    e.preventDefault();
+    const trigger = document.querySelector<HTMLElement>('[data-open="terminal"]:not([hidden])') ?? document.body;
+    void openPanel('terminal', document.activeElement instanceof HTMLElement ? document.activeElement : trigger);
+  });
 }
 
 function init(): void {
