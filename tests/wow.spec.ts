@@ -89,6 +89,54 @@ test.describe('Tarjeta protagonista', () => {
   });
 });
 
+test.describe('Scroll con el puntero encima de la sala (regresión)', () => {
+  const paused = (page: Page) => page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'paused').length);
+
+  test('el bucle sigue en marcha aunque el puntero quede sobre la sala o sobre un objeto', async ({ page }) => {
+    await page.goto('/');
+    const [x, y] = [520, 450];
+    await page.mouse.move(x, y);
+    for (let i = 0; i < 8; i++) {
+      await page.mouse.wheel(0, 120);
+      await page.waitForTimeout(150);
+      await page.mouse.move(x + (i % 2), y); // movimiento sintético de hover tras el scroll
+    }
+    await page.waitForTimeout(500);
+    await expect(band(page)).not.toHaveClass(/is-tilting/);
+    expect(await paused(page)).toBe(0);
+    const hs = (await page.locator('.hotspot[data-open="infra"]').boundingBox())!;
+    await page.mouse.move(hs.x + hs.width / 2, hs.y + hs.height / 2);
+    await page.mouse.wheel(0, 40);
+    await page.waitForTimeout(400);
+    await expect(page.locator('.scene-svg')).not.toHaveClass(/has-lit/);
+    expect(await paused(page)).toBe(0);
+  });
+
+  test('con movimiento real sí se inclina, y se endereza sola tras 1,2 s quieto', async ({ page }) => {
+    await page.goto('/');
+    await band(page).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(500); // fuera del margen de gracia del scroll
+    const box = (await band(page).boundingBox())!;
+    await page.mouse.move(box.x + 200, 300);
+    await page.mouse.move(box.x + 260, 340, { steps: 4 });
+    await expect(band(page)).toHaveClass(/is-tilting/);
+    await expect(band(page)).not.toHaveClass(/is-tilting/, { timeout: 3000 });
+    expect(await paused(page)).toBe(0);
+  });
+
+  test('el scroll endereza al instante una sala inclinada', async ({ page }) => {
+    await page.goto('/');
+    await band(page).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(500);
+    const box = (await band(page).boundingBox())!;
+    await page.mouse.move(box.x + 200, 300);
+    await page.mouse.move(box.x + 260, 340, { steps: 4 });
+    await expect(band(page)).toHaveClass(/is-tilting/);
+    await page.mouse.wheel(0, 60);
+    await expect(band(page)).not.toHaveClass(/is-tilting/, { timeout: 800 });
+  });
+});
+
 test.describe('Hojas', () => {
   test('escritorio: modal centrado y abierto con View Transition', async ({ page }) => {
     await page.addInitScript(() => {

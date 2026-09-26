@@ -19,19 +19,45 @@ declare global {
 const NS = 'http://www.w3.org/2000/svg';
 type Pt = [number, number];
 
+// ─────────────── Puntero «intencional» ───────────────
+// Al hacer scroll con el ratón quieto, la sala pasa por debajo del puntero y el navegador dispara
+// pointerenter/pointermove sintéticos para actualizar el hover. Si esos eventos activaran el
+// resaltado o la inclinación (que pausan el bucle), la sala se quedaba congelada durante el scroll.
+// Solo cuentan los movimientos reales del ratón, y no justo después de un scroll.
+const SCROLL_GRACE = 400; // ms tras el último scroll en los que se ignoran eventos del puntero
+let lastScroll = -Infinity;
+let fxAbort: AbortController | null = null;
+const isIntentional = (e: PointerEvent) =>
+  e.pointerType === 'mouse' && (e.movementX !== 0 || e.movementY !== 0) && performance.now() - lastScroll > SCROLL_GRACE;
+
 // ─────────────── 7.1 · Hover iluminado ───────────────
-function initHover(svg: SVGSVGElement): void {
+let clearLit: () => void = () => {};
+
+function initHover(svg: SVGSVGElement, signal: AbortSignal): void {
   const light = (key: string | null | undefined) => {
     svg.querySelectorAll(':scope > g.is-lit').forEach((g) => g.classList.remove('is-lit'));
     const obj = key ? svg.querySelector(`#obj-${key}`) : null;
     svg.classList.toggle('has-lit', !!obj);
     if (obj) obj.classList.add('is-lit');
   };
+  // Al hacer scroll se apaga el resaltado del ratón, salvo el de un objeto enfocado con el teclado
+  clearLit = () => {
+    const focused = document.activeElement as HTMLElement | null;
+    if (focused?.matches('.hotspot:focus-visible')) return;
+    if (svg.classList.contains('has-lit')) light(null);
+  };
   document.querySelectorAll<HTMLElement>('.hotspot[data-open]').forEach((btn) => {
-    btn.addEventListener('pointerenter', () => light(btn.dataset.open));
-    btn.addEventListener('pointerleave', () => light(null));
-    btn.addEventListener('focus', () => light(btn.dataset.open));
-    btn.addEventListener('blur', () => light(null));
+    // pointermove (no pointerenter): el objeto se ilumina con el primer movimiento real sobre él
+    btn.addEventListener(
+      'pointermove',
+      (e) => {
+        if (isIntentional(e) && !svg.querySelector(`#obj-${btn.dataset.open}.is-lit`)) light(btn.dataset.open);
+      },
+      { signal },
+    );
+    btn.addEventListener('pointerleave', () => light(null), { signal });
+    btn.addEventListener('focus', () => light(btn.dataset.open), { signal });
+    btn.addEventListener('blur', () => light(null), { signal });
   });
 }
 
@@ -404,7 +430,7 @@ function initSky(svg: SVGSVGElement): void {
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 let heroObserver: IntersectionObserver | null = null;
 
-function initHero(svg: SVGSVGElement): void {
+function initHero(svg: SVGSVGElement, signal: AbortSignal): void {
   const band = document.querySelector<HTMLElement>('.hero-band');
   const tilt = document.querySelector<HTMLElement>('.stage-tilt');
   if (!band || !tilt) return;
@@ -419,30 +445,51 @@ function initHero(svg: SVGSVGElement): void {
     heroObserver.observe(band);
   }
 
-  // Inclinación 3D (≤ 6°) que sigue al puntero: solo con ratón y sin movimiento reducido.
+  // Inclinación 3D (≤ 6°) que sigue al puntero, como un diorama (el bucle se pausa mientras se
+  // inclina). Solo con movimiento real del ratón; se endereza y reanuda el bucle al hacer scroll o
+  // tras IDLE ms con el ratón quieto.
   const MAX_Y = 5;
   const MAX_X = 3.5;
+  const IDLE = 1200;
   let frame = 0;
-  band.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse' || reduced()) return;
-    const r = band.getBoundingClientRect();
-    const nx = (e.clientX - r.left) / r.width - 0.5;
-    const ny = (e.clientY - r.top) / r.height - 0.5;
+  let idle = 0;
+  const flatten = () => {
+    window.clearTimeout(idle);
     cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() => {
-      tilt.style.setProperty('--ry', `${(nx * 2 * MAX_Y).toFixed(2)}deg`);
-      tilt.style.setProperty('--rx', `${(-ny * 2 * MAX_X).toFixed(2)}deg`);
-    });
-  });
-  band.addEventListener('pointerenter', (e) => {
-    if (e.pointerType === 'mouse' && !reduced()) band.classList.add('is-tilting');
-  });
-  band.addEventListener('pointerleave', () => {
     band.classList.remove('is-tilting');
-    cancelAnimationFrame(frame);
     tilt.style.setProperty('--ry', '0deg');
     tilt.style.setProperty('--rx', '0deg');
-  });
+  };
+  band.addEventListener(
+    'pointermove',
+    (e) => {
+      if (reduced() || !isIntentional(e)) return;
+      band.classList.add('is-tilting');
+      window.clearTimeout(idle);
+      idle = window.setTimeout(flatten, IDLE);
+      const r = band.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width - 0.5;
+      const ny = (e.clientY - r.top) / r.height - 0.5;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        tilt.style.setProperty('--ry', `${(nx * 2 * MAX_Y).toFixed(2)}deg`);
+        tilt.style.setProperty('--rx', `${(-ny * 2 * MAX_X).toFixed(2)}deg`);
+      });
+    },
+    { signal },
+  );
+  band.addEventListener('pointerleave', flatten, { signal });
+
+  // Scroll: la sala vuelve a la vida al instante (sin inclinación ni resaltado que pausen el bucle)
+  window.addEventListener(
+    'scroll',
+    () => {
+      lastScroll = performance.now();
+      if (band.classList.contains('is-tilting')) flatten();
+      clearLit();
+    },
+    { passive: true, signal },
+  );
 
   // «Encender la luz»: amanecer real de hoy en Madrid; al apagar vuelve a la hora real.
   const sw = band.querySelector<HTMLButtonElement>('[data-light]');
@@ -458,8 +505,11 @@ function initHero(svg: SVGSVGElement): void {
 export function initSceneFx(): void {
   const svg = document.querySelector<SVGSVGElement>('.scene-svg');
   if (!svg) return;
-  initHover(svg);
+  // Un AbortController por montaje: al re-renderizar (cambio de idioma) se retiran los oyentes globales
+  fxAbort?.abort();
+  fxAbort = new AbortController();
+  initHover(svg, fxAbort.signal);
   initSound();
   initSky(svg);
-  initHero(svg);
+  initHero(svg, fxAbort.signal);
 }

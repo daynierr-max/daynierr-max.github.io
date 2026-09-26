@@ -14,24 +14,24 @@ try {
   console.log('Navegador: Chromium de Playwright (rasterizado por software)');
 }
 
-async function measure(label, setup, during) {
+async function measure(label, setup, during, frames = 240) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(url);
   await page.waitForTimeout(1500); // calentamiento: la primera ráfaga tras cargar va en frío
   if (setup) await setup(page);
   const stamps = await page.evaluate(
-    (scroll) =>
+    ({ scroll, n }) =>
       new Promise((resolve) => {
         const t = [];
         const y0 = scrollY;
         const tick = (ts) => {
           t.push(ts);
           if (scroll) scrollTo(0, y0 + t.length * 6); // scroll continuo, ~360 px/s
-          t.length < 241 ? requestAnimationFrame(tick) : resolve(t);
+          t.length < n + 1 ? requestAnimationFrame(tick) : resolve(t);
         };
         requestAnimationFrame(tick);
       }),
-    during === 'scroll',
+    { scroll: during === 'scroll', n: frames },
   );
   const d = stamps.slice(1).map((v, i) => v - stamps[i]);
   const avg = d.reduce((a, b) => a + b) / d.length;
@@ -45,14 +45,19 @@ const results = [
   await measure('bucle (sala centrada)', (p) => p.locator('.hero-band').evaluate((el) => el.scrollIntoView({ block: 'center' }))),
   await measure('hover sobre «Sobre mí»', async (p) => {
     await p.locator('.hero-band').evaluate((el) => el.scrollIntoView({ block: 'center' }));
-    await p.locator('.hotspot[data-open="about"]').hover();
+    await p.waitForTimeout(450); // tras un scroll solo cuenta el movimiento real del ratón
+    const b = await p.locator('.hotspot[data-open="about"]').boundingBox();
+    await p.mouse.move(b.x + b.width / 2 - 8, b.y + b.height / 2);
+    await p.mouse.move(b.x + b.width / 2 + 8, b.y + b.height / 2, { steps: 3 });
   }),
   await measure('inclinada (diorama)', async (p) => {
     const band = p.locator('.hero-band');
     await band.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await p.waitForTimeout(450);
     const b = await band.boundingBox();
-    await p.mouse.move(b.x + 60, b.y + b.height - 60, { steps: 3 });
-  }),
+    await p.mouse.move(b.x + 40, b.y + 80);
+    await p.mouse.move(b.x + 60, b.y + 100, { steps: 3 });
+  }, undefined, 60), // 1 s: la sala se endereza sola tras 1,2 s con el ratón quieto
   await measure('scroll a través de la sala', (p) => p.evaluate(() => scrollTo(0, 0)), 'scroll'),
 ];
 await browser.close();

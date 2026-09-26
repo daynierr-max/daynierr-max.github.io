@@ -41,7 +41,11 @@ test.describe('Escena v2', () => {
   test('hover: sin recuadro, el objeto se ilumina y el resto se atenúa', async ({ page }) => {
     await page.goto('/');
     const hs = page.locator('.hotspot[data-open="infra"]');
-    await hs.hover();
+    await hs.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(450); // tras un scroll, solo cuenta el movimiento real del ratón
+    const b = (await hs.boundingBox())!;
+    await page.mouse.move(b.x + b.width / 2 - 6, b.y + b.height / 2);
+    await page.mouse.move(b.x + b.width / 2 + 6, b.y + b.height / 2, { steps: 3 });
     await expect(page.locator('.scene-svg')).toHaveClass(/has-lit/);
     await expect(page.locator('#obj-infra')).toHaveClass(/is-lit/);
     await expect(hs).toHaveCSS('box-shadow', 'none');
