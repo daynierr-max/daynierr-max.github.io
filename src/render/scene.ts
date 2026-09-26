@@ -41,7 +41,7 @@ const C = {
 
 // Caja(s) de mundo de cada objeto: definen la zona clicable (hotspot).
 type WBox = [number, number, number, number, number, number];
-const HOTSPOTS: Record<SectionId, { boxes: WBox[]; z: number }> = {
+const HOTSPOTS: Record<SectionId, { boxes: WBox[]; z: number; beacon?: number }> = {
   projects: { boxes: [[0.8, 0, 2.6, 3.8, 0, 4.8]], z: 1 },
   ai: { boxes: [[4.4, 0, 2.6, 7.6, 0, 4.8]], z: 1 },
   certs: { boxes: [[8.1, 0, 2.4, 10.4, 0, 4.6]], z: 1 },
@@ -49,7 +49,7 @@ const HOTSPOTS: Record<SectionId, { boxes: WBox[]; z: number }> = {
   experience: { boxes: [[0, 1.0, 0, 1.15, 3.4, 4.2]], z: 2 },
   about: { boxes: [[4.2, 3.6, 0, 8.2, 5.4, 2.6], [5.8, 5.8, 0, 6.9, 6.9, 3.0]], z: 2 },
   terminal: { boxes: [[9.2, 4.4, 2.3, 10.9, 4.4, 3.7]], z: 3 },
-  security: { boxes: [[9.1, 7.4, 0, 10.1, 8.4, 3.5]], z: 3 },
+  security: { boxes: [[9.1, 7.4, 0, 10.1, 8.4, 3.5]], z: 3, beacon: 80 },
   infra: { boxes: [[0.15, 8.3, 0, 1.45, 10, 4.6]], z: 3 },
 };
 
@@ -364,7 +364,7 @@ function avatar(): string {
 
 function head(): string {
   const [ax, ay] = P(6.35, 6.25, 1.0);
-  return `<g class="head" transform="translate(${(ax + 10).toFixed(1)} ${(ay - 100).toFixed(1)})">
+  return `<g class="head" transform="translate(${(ax + 10).toFixed(1)} ${(ay - 100).toFixed(1)})"><g class="head-inner">
   <rect x="-6" y="10" width="12" height="12" fill="#b37a5a"/>
   <circle r="18" fill="${C.skin}"/>
   <path d="M-18 2 A18 18 0 0 1 17 -6 Q4 -2 -2 -10 Q-8 0 -18 2 Z" fill="${C.hair}"/>
@@ -372,7 +372,7 @@ function head(): string {
   <g class="face"><circle cx="11" cy="-1" r="2" fill="#1a1410"/><path d="M6 8 Q11 12 15 7" stroke="#6b3f2a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
   <path d="M-19 -2 A19 19 0 0 1 19 -4" stroke="#1b2745" stroke-width="5" fill="none"/>
   <ellipse cx="-17" cy="2" rx="6" ry="9" fill="${C.cyan}"/>
-</g>`;
+</g></g>`;
 }
 
 function deskArea(): string {
@@ -427,7 +427,7 @@ function shield(): string {
 function terminal(): string {
   const [sx, sy] = P(10.05, 4.55, 0);
   return `<g id="obj-terminal" class="obj">
-  <ellipse cx="${sx}" cy="${sy}" rx="54" ry="16" fill="#000" opacity=".35" class="term-shadow"/>
+  <ellipse cx="${sx}" cy="${sy}" rx="70" ry="22" fill="url(#g-cyanglow)" class="term-shadow"/>
   <g class="float"><g transform="${onPlaneY(9.2, 4.4, 3.7)}">
     <rect x="0" y="0" width="170" height="120" rx="6" fill="#03101d" opacity=".94" stroke="${C.cyan}" stroke-width="2"/>
     <rect x="0" y="0" width="170" height="18" rx="6" fill="#0d2440"/>
@@ -464,7 +464,7 @@ ${rack()}
   const buttons = SECTION_ORDER.map((id) => {
     const b = screenBounds(HOTSPOTS[id].boxes);
     const s = ui.sections[id];
-    return `<button class="hotspot" type="button" data-open="${id}" aria-label="${esc(`${s.title}: ${s.object}`)}" style="left:${pct(b.x, VIEW_W)};top:${pct(b.y, VIEW_H)};width:${pct(b.w, VIEW_W)};height:${pct(b.h, VIEW_H)};z-index:${HOTSPOTS[id].z}"><span class="hs-label" aria-hidden="true">${esc(s.title)}</span></button>`;
+    return `<button class="hotspot" type="button" data-open="${id}" aria-label="${esc(`${s.title}: ${s.object}`)}" style="left:${pct(b.x, VIEW_W)};top:${pct(b.y, VIEW_H)};width:${pct(b.w, VIEW_W)};height:${pct(b.h, VIEW_H)};z-index:${HOTSPOTS[id].z}${HOTSPOTS[id].beacon ? `;--beacon-y:${HOTSPOTS[id].beacon}%` : ''}"><span class="hs-label" aria-hidden="true">${esc(s.title)}</span></button>`;
   }).join('');
   return `<div class="stage">${svg}<div class="hotspots">${buttons}</div></div>`;
 }
