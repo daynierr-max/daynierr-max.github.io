@@ -1,0 +1,355 @@
+{
+  "meta": {
+    "lang": "en",
+    "source": "Translation of docs/Daynier_Rodriguez_CV2026.pdf (26/09/2026 version)",
+    "pdf": "Daynier_Rodriguez_CV2026.pdf"
+  },
+  "basics": {
+    "name": "Daynier Rodríguez Ruíz",
+    "headline": "Systems & IT Support Technician | Microsoft Azure | Cybersecurity | Databases | Applied AI",
+    "location": "Madrid, Spain",
+    "email": "daynierr@gmail.com",
+    "availability": [
+      "EU work permit",
+      "Available immediately"
+    ],
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "label": "linkedin.com/in/daynier-rodriguez",
+        "url": "https://linkedin.com/in/daynier-rodriguez"
+      },
+      {
+        "network": "GitHub",
+        "label": "github.com/daynierr-max",
+        "url": "https://github.com/daynierr-max"
+      }
+    ]
+  },
+  "summary": "Systems and network technician with 10+ years of experience in systems administration, networking and support (national telecom operator and own business), working with hardware since 2006. Holds official Spanish Professional Certificates in IT Systems Operation (IFCT0210) and Database Administration (IFCT0310, level 3); currently studying the Higher Technician degree in Networked IT Systems Administration (ASIR). Cybersecurity training (Google, Cisco) and preparing for the Microsoft Azure AZ-104 certification. Uses generative AI and agents daily (Claude Code, self-built MCP servers, Ollama) to automate systems tasks, with a security mindset and human review of every result. Focused on systems administration, L1/L2 support, cloud and cybersecurity.",
+  "skills": [
+    {
+      "id": "systems",
+      "name": "Systems & hardware",
+      "items": [
+        "Windows Server",
+        "Active Directory",
+        "Microsoft 365",
+        "Intune",
+        "Linux (Ubuntu, Debian)",
+        "Hardware assembly and maintenance",
+        "L1/L2 remote and on-site support",
+        "24/7 monitoring"
+      ]
+    },
+    {
+      "id": "virtualization",
+      "name": "Virtualization & backup",
+      "items": [
+        "VMware",
+        "Hyper-V",
+        "Parallels",
+        "VirtualBox",
+        "Veeam"
+      ]
+    },
+    {
+      "id": "itsm",
+      "name": "Service management",
+      "items": [
+        "ITIL",
+        "ServiceNow",
+        "Jira (incident management and escalation)"
+      ]
+    },
+    {
+      "id": "networking",
+      "name": "Networking",
+      "items": [
+        "LAN/WLAN",
+        "TCP/IP",
+        "DNS",
+        "Firewall",
+        "Carrier network infrastructure monitoring"
+      ]
+    },
+    {
+      "id": "cloud",
+      "name": "Cloud (Microsoft Azure, AZ-104 lab in Bicep)",
+      "items": [
+        "Entra ID",
+        "RBAC",
+        "VNets",
+        "Peering",
+        "NSG",
+        "Storage",
+        "VMs",
+        "App Service",
+        "Azure Monitor",
+        "Azure Backup",
+        "Azure CLI"
+      ]
+    },
+    {
+      "id": "security",
+      "name": "Cybersecurity",
+      "items": [
+        "SIEM and IDS (fundamentals)",
+        "Threat and vulnerability management",
+        "Hardening",
+        "Backup and disaster recovery",
+        "GDPR"
+      ]
+    },
+    {
+      "id": "databases",
+      "name": "Databases",
+      "items": [
+        "SQL Server",
+        "MySQL",
+        "SQLite",
+        "Query optimization",
+        "Backup automation"
+      ]
+    },
+    {
+      "id": "ai",
+      "name": "AI & automation",
+      "items": [
+        "Claude Code",
+        "Model Context Protocol (MCP)",
+        "Gemini API",
+        "FastMCP",
+        "OpenAI Agents SDK",
+        "Ollama (local LLMs)",
+        "Prompt engineering",
+        "Responsible AI"
+      ]
+    },
+    {
+      "id": "scripting",
+      "name": "Scripting & IaC",
+      "items": [
+        "Python (FastAPI)",
+        "Bash",
+        "PowerShell",
+        "SQL",
+        "Bicep",
+        "Git"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "role": "Platform Operator",
+      "company": "Tunstall Televida",
+      "location": "Madrid",
+      "start": "2025-03",
+      "end": "2026-09",
+      "period": "Mar 2025 – Sep 2026",
+      "context": "Leading nationwide telecare provider; 24/7 service in a regulated environment (health data, GDPR).",
+      "highlights": [
+        "24/7 monitoring of the telecare platform and handling of alarms and incidents, escalating to systems according to procedure.",
+        "Applied information security, data protection (GDPR) and service continuity procedures in a healthcare environment.",
+        "Coordinated with operations, systems and user support teams to resolve incidents in real time."
+      ]
+    },
+    {
+      "role": "Database Administrator (internship)",
+      "company": "Pinkstone",
+      "location": "Las Rozas",
+      "start": "2023-09",
+      "end": "2024-02",
+      "period": "Sep 2023 – Feb 2024",
+      "context": "",
+      "highlights": [
+        "Optimized critical queries in SQL Server and MySQL through indexing, execution plan analysis and refactoring.",
+        "Automated backups and restore tests with scripts, keeping a traceable log of every restore.",
+        "Wrote technical documentation and trained internal users on query best practices."
+      ]
+    },
+    {
+      "role": "Freelance IT Technician",
+      "company": "Own business",
+      "location": "Camagüey, Cuba",
+      "start": "2018-01",
+      "end": "2023-07",
+      "period": "Jan 2018 – Jul 2023",
+      "context": "",
+      "highlights": [
+        "Designed, installed and maintained secure LAN/WLAN networks for 50+ business and residential clients.",
+        "Assembled, diagnosed and repaired hardware and Windows/Linux operating systems (hardware experience since 2006).",
+        "End-to-end client management: remote and on-site support, quotes, warranties and user training."
+      ]
+    },
+    {
+      "role": "Network & Systems Administrator",
+      "company": "ETECSA (telecommunications)",
+      "location": "Cuba",
+      "start": "2014-10",
+      "end": "2017-12",
+      "period": "Oct 2014 – Dec 2017",
+      "context": "",
+      "highlights": [
+        "Monitored the provincial network infrastructure serving 1,000+ concurrent users.",
+        "Introduced monitoring and incident response procedures aimed at reducing mean time to resolution (MTTR) and critical incidents.",
+        "Trained junior technicians in cybersecurity and Windows/Linux systems administration."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "algarrobo",
+      "name": "Production website for a client · algarroboadultdaycare.com",
+      "description": "Website for an adult day care center in Florida (USA): Next.js + TypeScript, static export and deployment on Cloudflare Pages; ~100 maintenance commits.",
+      "tech": [
+        "Next.js",
+        "TypeScript",
+        "Cloudflare Pages"
+      ],
+      "url": "https://algarroboadultdaycare.com",
+      "repo": null
+    },
+    {
+      "id": "tradingview-mcp",
+      "name": "TradingView ↔ Claude MCP server",
+      "description": "FastAPI + FastMCP + SQLite: exposes trading alerts to an AI agent through read-only tools, fail-closed authentication and 11 unit tests that caught and fixed a real bug.",
+      "tech": [
+        "FastAPI",
+        "FastMCP",
+        "SQLite"
+      ],
+      "url": null,
+      "repo": "tradingview-mcp"
+    },
+    {
+      "id": "azure-lab-az104",
+      "name": "AZ-104 lab as code",
+      "description": "Bicep + Azure CLI: VNet with least-privilege NSG, passwordless Linux VM, Azure Monitor with alerts and Azure Backup; deploy, verify and teardown scripts.",
+      "tech": [
+        "Bicep",
+        "Azure CLI"
+      ],
+      "url": null,
+      "repo": "azure-lab-az104"
+    },
+    {
+      "id": "gemini-apps",
+      "name": "Generative AI apps (Gemini)",
+      "description": "Three React apps; fixed API key exposure in the browser by moving calls to Cloudflare Pages Functions with input validation and short-lived tokens.",
+      "tech": [
+        "React",
+        "Gemini API",
+        "Cloudflare Pages Functions"
+      ],
+      "url": null,
+      "repo": [
+        "Busca_Farma",
+        "Blog",
+        "Proyecto_1"
+      ]
+    },
+    {
+      "id": "agent-skills",
+      "name": "Agentic skills library",
+      "description": "Set of reusable skills for MCP-based agents, including one focused on software supply-chain security.",
+      "tech": [
+        "MCP",
+        "Claude Code",
+        "Agent Skills"
+      ],
+      "url": null,
+      "repo": null
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Spanish Professional Certificate IFCT0310 – Database Administration (Level 3)",
+      "issuer": "Comunidad de Madrid",
+      "date": "2024",
+      "status": "earned"
+    },
+    {
+      "name": "Spanish Professional Certificate IFCT0210 – IT Systems Operation (Level 2)",
+      "issuer": "Comunidad de Madrid",
+      "date": "2025",
+      "status": "earned"
+    },
+    {
+      "name": "Google Cybersecurity Professional Certificate",
+      "detail": "8 courses: SIEM, IDS, Linux, SQL, Python",
+      "issuer": "Coursera",
+      "date": "2025",
+      "status": "earned",
+      "credentialUrl": null
+    },
+    {
+      "name": "Cisco Networking Academy: Cyber Threat Management",
+      "issuer": "Cisco",
+      "date": "2024",
+      "status": "earned"
+    },
+    {
+      "name": "Cisco Networking Academy: Introduction to Cybersecurity",
+      "issuer": "Cisco",
+      "date": "2023",
+      "status": "earned"
+    },
+    {
+      "name": "Anthropic Academy",
+      "detail": "AI Fluency: Framework & Foundations · Claude 101 · Claude Code 101 · Claude Code in Action · Introduction to Claude Cowork · Introduction to Model Context Protocol",
+      "issuer": "Anthropic",
+      "date": "2025–2026",
+      "status": "earned"
+    },
+    {
+      "name": "AWS Skill Builder",
+      "detail": "Foundations of Prompt Engineering · Responsible AI Practices · Generative AI for Executives",
+      "issuer": "AWS",
+      "date": "2025",
+      "status": "earned"
+    },
+    {
+      "name": "BIG school: AI Development, from 0 to Production",
+      "issuer": "BIG school",
+      "date": "2025–2026",
+      "status": "earned"
+    },
+    {
+      "name": "Microsoft Azure Administrator (AZ-104)",
+      "issuer": "Microsoft",
+      "date": "",
+      "status": "in preparation"
+    }
+  ],
+  "education": [
+    {
+      "degree": "Higher Technician Degree in Networked IT Systems Administration (CFGS ASIR)",
+      "school": "Nebrija Formación Profesional",
+      "detail": "online",
+      "period": "in progress (Sep 2026 – 2028)"
+    },
+    {
+      "degree": "High school diploma in Computing and Network Systems",
+      "school": "IPI Máximo Gómez Báez, Cuba",
+      "detail": "",
+      "period": "2013"
+    },
+    {
+      "degree": "High school diploma in Accounting",
+      "school": "Politécnico Cándido González, Cuba",
+      "detail": "",
+      "period": "2008"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "level": "native"
+    },
+    {
+      "language": "English",
+      "level": "B2 technical (official Microsoft, Cisco and AWS documentation)"
+    }
+  ]
+}
