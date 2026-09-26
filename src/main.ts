@@ -4,6 +4,7 @@ import { UI } from './i18n.ts';
 import { renderShell } from './render/shell.ts';
 import { renderPanel } from './render/panels.ts';
 import { mountTerminal } from './terminal.ts';
+import { initSceneFx } from './scene-fx.ts';
 
 const LANG_KEY = 'cv-lang';
 const THEME_KEY = 'cv-theme';
@@ -77,6 +78,7 @@ function setLang(next: Lang, keepFocus = false): void {
   const panel = document.querySelector<HTMLDialogElement>('#panel');
   if (panel?.open) panel.close();
   $('#app').innerHTML = renderShell(lang);
+  initSceneFx();
   syncRecruiter();
   syncThemeButton();
   hideHint(0);
@@ -199,7 +201,10 @@ function init(): void {
   bind();
   const initial = storedLang();
   if (initial && initial !== 'es') setLang(initial);
-  else lang = 'es';
+  else {
+    lang = 'es';
+    initSceneFx();
+  }
   syncRecruiter();
   setTheme(storedTheme() ?? currentTheme(), false);
   syncHintText();

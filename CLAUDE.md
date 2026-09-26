@@ -8,6 +8,7 @@ Un CV web presentado como la **ficha de una app**, con la ilustración isométri
 - **Descargar CV (PDF)** siempre visible en la barra (`/public/Daynier_Rodriguez_CV2026.pdf`). **Un solo botón de PDF por vista.**
 - Pista inicial de 3 s que desaparece sola: «Haz clic en los objetos» con puntero y «Toca» en pantallas táctiles. Nunca tapa contenido.
 - Nada bloquea el contenido: sin pantallas de carga largas, sin intros obligatorias, sin audio automático.
+- Sonido: solo una gota breve (Web Audio, sin archivos) **al hacer clic** en un objeto de la sala, por decisión del usuario (26/09/2026). Nunca audio al cargar ni en bucle.
 
 ## Dirección visual (v2 · «tu perfil como la ficha de una app»)
 Detalle completo en `PLAN_V2_APPSTORE.md`. Se presenta el perfil con el **lenguaje de diseño** de una ficha de app al estilo Apple: tipografía, tarjetas, materiales y movimiento.
@@ -66,6 +67,7 @@ Detalle completo en `PLAN_V2_APPSTORE.md`. Se presenta el perfil con el **lengua
 - Fondo más frío y menos contrastado. El rótulo «NIGHT OPS» se elimina o se convierte en un neón pequeño y sutil.
 - Amanecer («Encender la luz»): cielo cálido, pantallas atenuadas y el avatar se estira.
 - Se conservan las micro-interacciones por objeto: saludo, LEDs en secuencia, escudo «verified», cables, RRG, carpetas, chinchetas, cursor y ventana.
+- **Escena v2 (aplicada)**: avatar estilo figura de juguete (gorra, barba, auriculares cian), taza a la derecha del ratón, zamioculca en maceta cubo, hover que ilumina el objeto y atenúa el resto (con `opacity` y el bucle del resto en pausa, para mantener 60 fps), y **ciclo día/noche de 24 h con la posición real del sol en Madrid** (NOAA; ventana al oeste: el rayo directo solo entra por la tarde). Código en `src/scene-fx.ts`; desde la consola: `skyCycle.demo(60)`, `skyCycle.at('07:45')`, `skyCycle.live()`.
 
 ### Modo lectura (antes «modo reclutador»)
 - En ≥ 1024 px, dos columnas: la lateral fija con monograma, contacto, idiomas, disponibilidad y certificaciones; la principal con resumen, experiencia y proyectos. En móvil, una columna.

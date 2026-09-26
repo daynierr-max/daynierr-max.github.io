@@ -472,6 +472,9 @@ dialog#panel::backdrop {
     transition-duration: var(--dur-fade) !important;
     scroll-behavior: auto !important;
   }
+  .hint {
+    transition: none !important; /* desaparece sin fundido */
+  }
 }
 
 /* ── Impresión: siempre el CV clásico ── */

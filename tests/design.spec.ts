@@ -63,6 +63,7 @@ test('la barra es de cristal (backdrop-filter) y fija', async ({ page }) => {
 
 for (const scheme of ['light', 'dark'] as const) {
   test(`captura /styleguide · ${scheme}`, async ({ page }) => {
+    test.slow(); // página muy larga (8 iconos a 1024 px) en captura completa
     await page.emulateMedia({ colorScheme: scheme });
     await page.goto('/styleguide/');
     await page.evaluate(() => document.fonts.ready);

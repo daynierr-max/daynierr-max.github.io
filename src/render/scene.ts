@@ -2,6 +2,7 @@
 import type { Lang, SectionId } from '../types.ts';
 import { CVS, SECTION_ORDER, UI } from '../i18n.ts';
 import { esc } from './html.ts';
+import { zzPlant } from './zzplant.ts';
 import {
   box,
   hull,
@@ -15,7 +16,6 @@ import {
   VIEW_H,
   VIEW_W,
   type V2,
-  type V3,
 } from './iso.ts';
 
 const W = 11; // ancho de la sala (x)
@@ -69,6 +69,11 @@ const defs = `<defs>
   <radialGradient id="g-sun"><stop offset="0" stop-color="#fff1d0"/><stop offset=".35" stop-color="#ffd08a" stop-opacity=".9"/><stop offset="1" stop-color="#ff9e5e" stop-opacity="0"/></radialGradient>
   <linearGradient id="g-shield" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#34e0ff" stop-opacity=".45"/><stop offset="1" stop-color="#34e0ff" stop-opacity=".08"/></linearGradient>
   <linearGradient id="g-cone" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#34e0ff" stop-opacity=".35"/><stop offset="1" stop-color="#34e0ff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="tf-skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0a57f"/><stop offset="1" stop-color="#b8795a"/></linearGradient>
+  <linearGradient id="tf-shirt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a6a9e"/><stop offset="1" stop-color="#2c4470"/></linearGradient>
+  <linearGradient id="tf-cap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e3f66"/><stop offset="1" stop-color="#1b2644"/></linearGradient>
+  <linearGradient id="g-patch" gradientUnits="userSpaceOnUse" x1="541" y1="640.6" x2="815" y2="792"><stop offset="0" stop-color="#ffd08a" stop-opacity=".42"/><stop offset="1" stop-color="#ffb547" stop-opacity=".2"/></linearGradient>
+  <filter id="f-soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3"/></filter>
 </defs>`;
 
 function room(): string {
@@ -130,19 +135,13 @@ function windowObj(): string {
 </g>`;
 }
 
+// Volumen del haz a la hora del render estático (atardecer). El ciclo día/noche lo
+// recalcula en vivo con la posición real del sol; la mancha en el suelo vive en #obj-about.
+const BEAM_VOL: V2[] = [[301, 320.5], [475, 233.5], [902, 748.5], [728, 835.5], [454, 684.1], [301, 499.5]];
+export const BEAM_PATCH = '628,597.1 902,748.5 728,835.5 454,684.1';
+
 function beam(): string {
-  const d: V3 = [1, 0.32, -0.85];
-  const corners: V3[] = [
-    [0, WIN.y0, WIN.z0],
-    [0, WIN.y1, WIN.z0],
-    [0, WIN.y1, WIN.z1],
-    [0, WIN.y0, WIN.z1],
-  ];
-  const floor: V3[] = corners.map(([x, y, z]) => {
-    const t = z / -d[2];
-    return [x + d[0] * t, y + d[1] * t, 0];
-  });
-  const vol = hull([...corners, ...floor].map(([x, y, z]) => P(x, y, z)));
+  const vol = BEAM_VOL;
   const xs = vol.map((p) => p[0]);
   const ys = vol.map((p) => p[1]);
   const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
@@ -169,7 +168,6 @@ function beam(): string {
   }
   return `<g id="beam" class="beam">
   <polygon points="${path2(vol)}" fill="url(#g-beam)" class="beam-vol"/>
-  ${poly(floor, '#ffc47a', 'opacity=".13" class="beam-floor"')}
   <g fill="#ffe2b0">${dust.join('')}</g>
 </g>`;
 }
@@ -325,21 +323,6 @@ function corkboard(): string {
 </g>`;
 }
 
-function plant(): string {
-  const [cx, cy] = P(10.35, 1.75, 1.35);
-  const leaves = [
-    [-26, -6, 30, 12, -35],
-    [24, -4, 30, 11, 30],
-    [-8, -30, 12, 32, -8],
-    [10, -26, 12, 30, 14],
-    [-30, 12, 28, 10, -10],
-    [30, 14, 26, 10, 12],
-  ]
-    .map(([x, y, rx, ry, rot], i) => `<ellipse cx="${cx + x}" cy="${cy + y}" rx="${rx}" ry="${ry}" transform="rotate(${rot} ${cx + x} ${cy + y})" fill="${i % 2 ? '#2aa37a' : '#1f7a5a'}"/>`)
-    .join('');
-  return `<g class="plant">${box(10.0, 1.4, 0, 0.7, 0.7, 0.62, '#2b3c6b')}<g class="sway">${leaves}</g></g>`;
-}
-
 // ── Escritorio, monitores, silla y avatar (sobre mí) ──
 function monitorScreen(x: number, seed: number): string {
   const r = rng(seed);
@@ -353,32 +336,66 @@ function monitorScreen(x: number, seed: number): string {
 
 function avatar(): string {
   const [ax, ay] = P(6.35, 6.25, 1.0);
-  const hoodie = C.teal;
   return `<g class="avatar" transform="translate(${ax.toFixed(1)} ${ay.toFixed(1)})">
-  <g class="torso"><path d="M-23 2 L23 2 L30 -66 Q2 -84 -26 -68 Z" fill="${hoodie}"/><path d="M-6 -70 Q4 -60 14 -72" stroke="#16707f" stroke-width="3" fill="none"/></g>
-  <g class="arm arm-left"><path d="M-20 -62 L8 -38 L70 -62" stroke="#197a8c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="72" cy="-62" r="6.5" fill="${C.skin}"/></g>
-  <g class="arm arm-type"><path d="M24 -66 L52 -42 L92 -58" stroke="${hoodie}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="94" cy="-58" r="6.5" fill="${C.skin}"/></g>
-  <g class="arm arm-wave"><path d="M24 -66 L52 -96 L58 -132" stroke="${hoodie}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="59" cy="-138" r="8" fill="${C.skin}"/></g>
+  <g class="torso">
+    <path d="M-27 2 L27 2 Q33 -38 30 -64 Q2 -86 -29 -68 Q-31 -30 -27 2 Z" fill="url(#tf-shirt)"/>
+    <path d="M-29 -68 Q-31 -30 -27 2 L-18 2 Q-22 -34 -19 -66 Z" fill="#ffffff" opacity=".08"/>
+    <path d="M-8 -73 Q3 -62 14 -74" stroke="#22375c" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <rect x="-2" y="-48" width="20" height="14" rx="4" fill="#1b2744"/>
+    <text x="8" y="-37.5" font-family="ui-monospace,monospace" font-size="10" font-weight="700" fill="${C.cyan}" text-anchor="middle">&gt;_</text>
+  </g>
+  <g class="arm arm-left">
+    <path d="M-20 -62 L4 -41" stroke="#2c4470" stroke-width="16" stroke-linecap="round"/>
+    <path d="M6 -40 L68 -62" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
+    <circle cx="72" cy="-62" r="8.5" fill="#c98d6a"/>
+  </g>
+  <g class="arm arm-type">
+    <path d="M24 -66 L48 -45" stroke="#3b5a8c" stroke-width="16" stroke-linecap="round"/>
+    <path d="M50 -43 L90 -58" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
+    <circle cx="94" cy="-58" r="8.5" fill="#d59a74"/>
+  </g>
+  <g class="arm arm-wave">
+    <path d="M24 -66 L48 -92" stroke="#3b5a8c" stroke-width="16" stroke-linecap="round"/>
+    <path d="M50 -95 L58 -130" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
+    <circle cx="59" cy="-138" r="10" fill="#d59a74"/>
+  </g>
 </g>`;
 }
 
 function head(): string {
   const [ax, ay] = P(6.35, 6.25, 1.0);
-  return `<g class="head" transform="translate(${(ax + 10).toFixed(1)} ${(ay - 100).toFixed(1)})"><g class="head-inner">
-  <rect x="-6" y="10" width="12" height="12" fill="#b37a5a"/>
-  <circle r="18" fill="${C.skin}"/>
-  <path d="M-18 2 A18 18 0 0 1 17 -6 Q4 -2 -2 -10 Q-8 0 -18 2 Z" fill="${C.hair}"/>
-  <path d="M-19 4 A18 18 0 0 1 -6 -16 L-14 12 Z" fill="${C.hair}"/>
-  <g class="face"><circle cx="11" cy="-1" r="2" fill="#1a1410"/><path d="M6 8 Q11 12 15 7" stroke="#6b3f2a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
-  <path d="M-19 -2 A19 19 0 0 1 19 -4" stroke="#1b2745" stroke-width="5" fill="none"/>
-  <ellipse cx="-17" cy="2" rx="6" ry="9" fill="${C.cyan}"/>
+  return `<g class="head" transform="translate(${(ax + 10).toFixed(1)} ${(ay - 102).toFixed(1)})"><g class="head-inner">
+  <rect x="-7" y="14" width="14" height="12" rx="3" fill="#a86f4f"/>
+  <rect x="-23" y="-20" width="46" height="44" rx="16" fill="url(#tf-skin)"/>
+  <ellipse cx="-2" cy="-6" rx="12" ry="7" fill="#ffffff" opacity=".18"/>
+  <path d="M-23 2 L-23 8 Q-22 26 0 26 Q20 26 23 10 L23 4 Q17 12 12 9 Q6 13 2 9 Q-6 12 -12 6 Q-18 4 -23 2 Z" fill="#2b1a10"/>
+  <path d="M8 13 Q13 16 18 12" stroke="#e7b89a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <ellipse cx="13" cy="1" rx="2.8" ry="3.6" fill="#1a1410"/>
+  <circle cx="14" cy="0" r="1" fill="#ffffff"/>
+  <path d="M8 -6 Q13 -9 18 -6" stroke="#2b1a10" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <g class="face">
+    <path d="M5 10 Q13 21 21 9 Z" fill="#ffffff" stroke="#5a2a1c" stroke-width="1.6" stroke-linejoin="round"/>
+  </g>
+  <path d="M-25 -4 Q-25 -32 0 -32 Q25 -32 25 -6 L25 -4 Z" fill="url(#tf-cap)"/>
+  <path d="M14 -9 Q34 -12 42 -3 Q31 2 14 -1 Z" fill="#16213b"/>
+  <rect x="-25" y="-8" width="50" height="5" rx="2" fill="#16213b"/>
+  <circle cx="8" cy="-18" r="7" fill="#d7dde8" stroke="#16213b" stroke-width="1.4"/>
+  <circle cx="8" cy="-18" r="4" fill="none" stroke="#2e3f66" stroke-width="1.2"/>
+  <path d="M-26 -2 A26 28 0 0 1 20 -24" stroke="#0f1830" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="-22" cy="3" rx="7.5" ry="10.5" fill="#1b2745"/>
+  <ellipse cx="-21" cy="3" rx="5.5" ry="8.5" fill="${C.cyan}"/>
 </g></g>`;
 }
 
 function deskArea(): string {
   const leg = (x: number, y: number) => box(x, y, 0, 0.12, 0.12, 1.2, '#0e172d');
-  return `<g id="obj-about" class="obj">
+  // Alfombra y mancha de sol en su propia capa (mismo orden de pintado: alfombra → luz → escritorio).
+  // Así el halo del hover de «Sobre mí» no envuelve la alfombra entera (coste de filtro y aspecto).
+  return `<g class="floor-layer">
   <g transform="${onPlaneZ(3.5, 3.1, 0.01)}"><ellipse cx="260" cy="210" rx="270" ry="200" fill="#16244a" stroke="#22386b" stroke-width="3"/></g>
+  <g class="beam-patch-wrap"><polygon class="beam-patch" points="${BEAM_PATCH}" fill="url(#g-patch)" filter="url(#f-soft)"/></g>
+</g>
+<g id="obj-about" class="obj">
   ${leg(4.3, 3.7)}${leg(8.0, 3.7)}
   ${box(6.95, 3.75, 0, 1.15, 1.5, 1.2, '#1c2848')}
   ${box(4.2, 3.6, 1.2, 4.0, 1.8, 0.12, C.furniture)}
@@ -390,8 +407,8 @@ function deskArea(): string {
   ${box(5.7, 4.55, 1.32, 1.3, 0.45, 0.05, '#1a2744')}
   <g transform="${onPlaneZ(5.75, 4.6, 1.38)}" fill="#2b3b66">${Array.from({ length: 3 }, (_, r) => Array.from({ length: 10 }, (_, c) => `<rect x="${c * 12 + 2}" y="${r * 11 + 3}" width="9" height="8" rx="1"/>`).join('')).join('')}</g>
   ${box(7.35, 4.7, 1.32, 0.18, 0.28, 0.04, '#26365f')}
-  ${box(4.6, 4.7, 1.32, 0.24, 0.24, 0.32, '#d9cdb8')}
-  <path class="steam" d="M${P(4.72, 4.82, 1.7)[0]} ${P(4.72, 4.82, 1.7)[1]}q6 -10 0 -18q-6 -8 0 -16" stroke="#cfd8e8" stroke-width="2" fill="none" opacity=".45"/>
+  ${box(7.68, 4.47, 1.32, 0.24, 0.24, 0.32, '#d9cdb8')}
+  <path class="steam" d="M${P(7.8, 4.59, 1.7).map((n) => n.toFixed(1)).join(' ')}q6 -10 0 -18q-6 -8 0 -16" stroke="#cfd8e8" stroke-width="2" fill="none" opacity=".45"/>
   <g transform="${onPlaneZ(5.8, 5.8, 0.02)}"><ellipse cx="55" cy="55" rx="60" ry="60" fill="#0a1226" opacity=".7"/></g>
   ${box(6.25, 6.2, 0, 0.18, 0.18, 0.85, '#0e162b')}
   ${box(5.85, 5.85, 0.85, 1.0, 0.95, 0.16, '#22325a')}
@@ -452,9 +469,9 @@ ${rrg()}
 ${nodes()}
 ${corkboard()}
 ${windowObj()}
-${beam()}
 ${bookshelf()}
-${plant()}
+${beam()}
+${zzPlant()}
 ${deskArea()}
 ${terminal()}
 ${shield()}
