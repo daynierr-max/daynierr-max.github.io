@@ -1,0 +1,25 @@
+{
+  "name": "cv-interactivo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CV interactivo de Daynier Rodríguez — sala de operaciones nocturna isométrica",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/size-report.mjs",
+    "preview": "vite preview --port 4173 --strictPort",
+    "test": "playwright test",
+    "screenshots": "playwright test --project=screenshots",
+    "lhci": "lhci autorun"
+  },
+  "devDependencies": {
+    "@lhci/cli": "0.15.1",
+    "@playwright/test": "1.63.0",
+    "@types/node": "26.6.2",
+    "typescript": "7.0.2",
+    "vite": "8.3.0"
+  }
+}
