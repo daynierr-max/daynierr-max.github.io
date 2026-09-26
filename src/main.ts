@@ -70,6 +70,8 @@ async function openPanel(id: SectionId, trigger: HTMLElement): Promise<void> {
   dialog.showModal();
   $('#panel-body').scrollTop = 0;
   if (id === 'terminal') {
+    // Foco inmediato: lo que se teclee mientras carga el módulo no se pierde.
+    $<HTMLInputElement>('#term-input').focus();
     const { mountTerminal } = await import('./terminal.ts');
     mountTerminal($('[data-terminal]'), lang, () => dialog.close());
   } else {
@@ -131,6 +133,11 @@ function bind(): void {
   );
 
   window.addEventListener('popstate', () => syncRecruiter());
+
+  // La terminal nunca envía el formulario (aunque se pulse Enter antes de montarse).
+  document.addEventListener('submit', (e) => {
+    if ((e.target as HTMLElement).closest('.term-line')) e.preventDefault();
+  });
 
   // Atajo oculto: la tecla ` (o ~) abre la terminal desde cualquier punto.
   document.addEventListener('keydown', (e) => {

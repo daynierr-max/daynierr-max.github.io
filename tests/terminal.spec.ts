@@ -61,6 +61,7 @@ test.describe('Terminal (easter egg)', () => {
   test('en inglés responde en inglés', async ({ page }) => {
     await page.goto('/?lang=en');
     await page.locator('.hotspot[data-open="terminal"]').click();
+    await expect(page.getByLabel('Terminal command')).toBeFocused();
     await run(page, 'nope');
     await expect(page.locator('.term-log')).toContainText('command not found: nope');
   });

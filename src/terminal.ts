@@ -58,5 +58,5 @@ export function mountTerminal(root: HTMLElement, lang: Lang, exit: () => void): 
     e.preventDefault();
   });
 
-  input.focus();
+  if (document.activeElement !== input) input.focus();
 }
