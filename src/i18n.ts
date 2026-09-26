@@ -26,6 +26,7 @@ interface UI {
   switchLang: string;
   switchLangShort: string;
   hint: string;
+  hintTouch: string;
   close: string;
   sceneLabel: string;
   cardsLabel: string;
@@ -70,6 +71,7 @@ export const UI: Record<Lang, UI> = {
     switchLang: 'Switch to English',
     switchLangShort: 'EN',
     hint: 'Haz clic en los objetos · o pulsa Modo reclutador',
+    hintTouch: 'Toca los objetos · o pulsa Modo reclutador',
     close: 'Cerrar',
     sceneLabel: 'Sala de operaciones interactiva: cada objeto abre una sección del CV',
     cardsLabel: 'Secciones del CV',
@@ -122,6 +124,7 @@ export const UI: Record<Lang, UI> = {
     switchLang: 'Cambiar a español',
     switchLangShort: 'ES',
     hint: 'Click the objects · or press Recruiter mode',
+    hintTouch: 'Tap the objects · or press Recruiter mode',
     close: 'Close',
     sceneLabel: 'Interactive operations room: each object opens a CV section',
     cardsLabel: 'CV sections',

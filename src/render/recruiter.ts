@@ -1,7 +1,7 @@
 // Modo reclutador: el CV clásico, en HTML semántico y una sola columna.
 import type { Lang } from '../types.ts';
 import { CVS, UI } from '../i18n.ts';
-import { certItem, contactList, esc, jobItem, PDF_HREF, projectItem, skillGroups } from './html.ts';
+import { certItem, contactList, esc, jobItem, projectItem, skillGroups } from './html.ts';
 
 export function renderRecruiter(lang: Lang): string {
   const cv = CVS[lang];
@@ -13,7 +13,6 @@ export function renderRecruiter(lang: Lang): string {
     <p class="sheet-headline">${esc(cv.basics.headline)}</p>
     ${contactList(cv)}
     <p class="chips" aria-label="${esc(h.availability)}">${cv.basics.availability.map((a) => `<span class="chip">${esc(a)}</span>`).join('')}</p>
-    <p class="sheet-actions no-print"><a class="btn btn-solid" href="${PDF_HREF}" download>${esc(ui.downloadPdf)}</a></p>
   </header>
   <section aria-labelledby="r-summary"><h2 id="r-summary">${esc(h.summary)}</h2><p>${esc(cv.summary)}</p></section>
   <section aria-labelledby="r-exp"><h2 id="r-exp">${esc(h.experience)}</h2><ol class="list">${cv.experience.map(jobItem).join('')}</ol></section>

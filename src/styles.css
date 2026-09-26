@@ -1024,3 +1024,10 @@ body:has(#panel[open]) .scene-svg * {
 #obj-contact.is-active ~ .beam { opacity: 1; }
 #obj-contact .win-glow { transition: opacity 0.6s; opacity: 0.85; }
 #obj-contact.is-active .win-glow { opacity: 1; }
+
+/* Móvil: las tarjetas ya explican la interacción; la pista no debe tapar contenido */
+@media (max-width: 767px) {
+  .hint {
+    display: none;
+  }
+}

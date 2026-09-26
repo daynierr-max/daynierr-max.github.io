@@ -55,6 +55,12 @@ function setLang(next: Lang, keepFocus = false): void {
   }
 }
 
+// En pantallas táctiles la pista dice «Toca» en vez de «Haz clic».
+function syncHintText(): void {
+  const hint = document.querySelector('#hint');
+  if (hint && matchMedia('(hover: none)').matches) hint.textContent = UI[lang].hintTouch;
+}
+
 function hideHint(delay: number): void {
   window.setTimeout(() => document.querySelector('#hint')?.classList.add('is-hidden'), delay);
 }
@@ -155,6 +161,7 @@ function init(): void {
   if (initial && initial !== 'es') setLang(initial);
   else lang = 'es';
   syncRecruiter();
+  syncHintText();
   hideHint(3000);
 }
 

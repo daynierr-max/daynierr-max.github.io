@@ -1,32 +1,76 @@
 # CLAUDE.md — CV interactivo de Daynier Rodríguez
 
 ## Qué es este proyecto
-Un CV web interactivo con una **ilustración isométrica animada en bucle** como interfaz. El reclutador explora una sala (un "centro de operaciones" nocturno) y cada objeto abre una sección del CV. Objetivo de negocio: que un reclutador entienda el perfil en **menos de 90 segundos** y piense "esta persona se toma su tiempo y hace cosas distintas".
+Un CV web presentado como la **ficha de una app**, con la ilustración isométrica animada (una sala de operaciones nocturna) como imagen protagonista. Cada objeto de la sala y cada «app» de la estantería abre una sección del CV. Objetivo de negocio: que un reclutador entienda el perfil en **menos de 90 segundos** y piense «esta persona se toma su tiempo y hace cosas distintas».
 
 ## Regla de oro: no hacer perder tiempo
-- **Modo reclutador** siempre visible (botón fijo arriba a la derecha): un clic muestra el CV clásico en una sola columna, legible y escaneable.
-- **Descargar PDF** siempre visible junto a él (`/public/Daynier_Rodriguez_CV2026.pdf`).
-- Pista inicial de 3 s ("Haz clic en los objetos · o pulsa Modo reclutador") que desaparece sola.
+- **Leer ahora (modo lectura)** siempre a un toque desde la cabecera: muestra el CV clásico, legible y escaneable.
+- **Descargar CV (PDF)** siempre visible en la barra (`/public/Daynier_Rodriguez_CV2026.pdf`). **Un solo botón de PDF por vista.**
+- Pista inicial de 3 s que desaparece sola: «Haz clic en los objetos» con puntero y «Toca» en pantallas táctiles. Nunca tapa contenido.
 - Nada bloquea el contenido: sin pantallas de carga largas, sin intros obligatorias, sin audio automático.
 
-## Dirección visual
-- Inspiración de **género**: ilustración isométrica en bucle, oscura y vibrante (tipo "9 to 5" de DeeKay). **No copiar esa obra**: ni su composición, ni su personaje, ni su oficina roja con puerta EXIT. La escena es original.
-- Escena propia: sala de operaciones nocturna, vista isométrica 2:1. Paleta base azul noche / cian / ámbar (no rojo). Luz volumétrica desde una ventana, polvo flotando, pantallas que parpadean.
-- Personaje: avatar original y genérico (sin parecido a ningún personaje conocido), trabajando en su puesto, animación sutil (teclear, girar la silla, respirar).
-- Todo dibujado con **SVG generado por código** (formas isométricas desde funciones utilitarias), sin imágenes externas de terceros.
+## Dirección visual (v2 · «tu perfil como la ficha de una app»)
+Detalle completo en `PLAN_V2_APPSTORE.md`. Se presenta el perfil con el **lenguaje de diseño** de una ficha de app al estilo Apple: tipografía, tarjetas, materiales y movimiento.
+- **Límite legal y de marca**: nada de logo de Apple, ni la palabra «App Store», ni la fuente SF Pro, ni iconos de Apple. **Prohibido inventar valoraciones, reseñas o estrellas.**
+- La sala isométrica nocturna se mantiene como **imagen protagonista** de la ficha, no como toda la interfaz. Sigue siendo SVG generado por código, original (inspiración de género, sin copiar «9 to 5» de DeeKay) y sin imágenes de terceros.
 
-## Mapa de la escena → secciones del CV
-| Objeto (hotspot) | Sección | Micro-interacción |
+### Estructura de la página (de arriba abajo)
+1. **Barra de cristal** fija (`backdrop-filter: blur(20px) saturate(180%)`): monograma, nombre, ES/EN, claro/oscuro y el botón «Descargar CV» en píldora.
+2. **Cabecera de producto**: icono squircle «DR» de 128–160 px, nombre en display de 48–72 px (peso 700, tracking −0.03em), subtítulo, botón primario «Obtener CV» (PDF) y secundario «Leer ahora» (modo lectura).
+3. **Fila de datos clave** en columnas con separadores finos, todo desde el JSON: experiencia 10+ años · certificaciones · ubicación · idiomas · disponibilidad.
+4. **Tarjeta protagonista con la sala**:
+   - Se expande con el scroll (`animation-timeline: view()`, con fallback).
+   - Parallax o inclinación ≤ 6° que sigue al puntero.
+   - Interruptor «Encender la luz» que pasa de noche a amanecer.
+   - Hotspots como mini-iconos de cristal (sin los puntos naranjas).
+5. **Estantería de 8 «apps»** con scroll-snap: Infra y Azure, Ciberseguridad, IA y MCP, Proyectos, Experiencia, Certificaciones, Terminal y Contacto. Cada una abre su hoja con una transición de tarjeta que se expande (View Transitions API, con fallback).
+6. **Vista previa**: carrusel de proyectos con stack en chips y «Ver en GitHub».
+7. **Novedades — Versión 2026**: ASIR en curso, AZ-104 en preparación y último proyecto.
+8. **Historial de versiones**: la experiencia como versiones (`v2014 · ETECSA` … `v2025 · Televida`).
+9. **Información**: tabla final de la ficha, todo real (proveedor, categoría, compatibilidad, idiomas, tamaño real del bundle, ubicación).
+10. **Contacto**: tarjeta grande con email, LinkedIn y GitHub, y «Obtener CV».
+
+### Tokens del sistema de diseño
+| Token | Valor |
+|---|---|
+| Tipografía | **Inter** variable, autoalojada (`@fontsource-variable/inter`, CSP `font-src 'self'`). Monoespaciada **solo** en la terminal |
+| Escala | 12 / 15 / 17 (cuerpo) / 22 / 28 / 34 / 48 / 72 · interlineado 1.1 en titulares y 1.5 en texto |
+| Acento único | Azul `#0A84FF` (oscuro) / `#0071E3` (claro). El ámbar y el cian quedan solo dentro de la ilustración |
+| Neutros oscuros | `#000` · `#0B0B0F` · superficie `#1C1C1E` · elevada `#2C2C2E` · texto `#F5F5F7` · secundario `#A1A1A6` |
+| Neutros claros | `#F5F5F7` · superficie `#FFF` · texto `#1D1D1F` · secundario `#6E6E73` |
+| Radios | Tarjetas de 22 px · hojas de 28 px · iconos en **squircle real** (trazado de superelipse) |
+| Sombras | `0 1px 2px rgb(0 0 0/.06), 0 8px 24px rgb(0 0 0/.12)`; en oscuro, además, un borde interior de 1 px en blanco al 8 % |
+| Movimiento | Curvas de muelle con `linear()`, de 350–550 ms y como mucho un rebote. Con reduced-motion, fundidos de 150 ms |
+| Tema | Claro/oscuro según el sistema, con conmutador guardado en `localStorage` |
+
+### Receta de iconos (SVG en código, rejilla de 1024)
+1. Fondo squircle con un degradado de dos tonos cercanos (el claro arriba a la izquierda).
+2. Glifo simple con volumen (2–3 capas de extrusión y sombra propia), luz desde arriba a la izquierda.
+3. Brillo especular: una elipse blanca en el tercio superior, al 18–25 %.
+4. Borde interior de 1,5 px en blanco al 20 % y sombra exterior suave.
+5. Como mucho 3 colores por icono y la misma luz en todos, para que formen una familia.
+
+| Icono | Glifo | Degradado |
 |---|---|---|
-| Escritorio con monitores + avatar | Sobre mí / perfil | El avatar se gira y "saluda" |
-| Rack de servidores con LEDs | Infraestructura y Azure | Los LEDs se encienden en secuencia |
-| Escudo holográfico / candado | Ciberseguridad (Google Cybersecurity Certificate) | El escudo pulsa y muestra "verified" |
-| Pantalla de nodos conectados por cables | IA y MCP (servidores MCP, skills agénticas, Anthropic Academy) | Los cables se iluminan de nodo a nodo |
-| Pantalla con gráfico de rotación (RRG) | Proyectos personales (screener sectorial, herramientas propias) | El gráfico anima su trayectoria |
-| Estantería con carpetas | Experiencia laboral (timeline) | Las carpetas se abren en orden |
-| Tablón de corcho con diplomas | Certificaciones y formación | Las chinchetas caen una a una |
-| Terminal flotante | Easter egg: terminal con comandos `help`, `whoami`, `skills`, `contact`, `cv --pdf` | Cursor parpadeante |
-| Puerta / ventana al amanecer | Contacto ("¿Hablamos?") | Se abre y entra luz |
+| Infra y Azure | rack con LEDs | azul marino → azul |
+| Ciberseguridad | escudo con candado | índigo → violeta |
+| IA y MCP | 3 nodos conectados | verde azulado → cian |
+| Proyectos | gráfico con curva | naranja → rosa |
+| Experiencia | maletín / carpeta | grafito → gris |
+| Certificaciones | medalla o sello | dorado → ámbar |
+| Terminal | `>_` | negro → grafito |
+| Contacto | sobre / avión de papel | azul → celeste |
+
+### Ilustración
+- Caras con degradado, sombras de contacto bajo los muebles y bloom en pantallas y LEDs con **un único filtro SVG compartido**.
+- Fondo más frío y menos contrastado. El rótulo «NIGHT OPS» se elimina o se convierte en un neón pequeño y sutil.
+- Amanecer («Encender la luz»): cielo cálido, pantallas atenuadas y el avatar se estira.
+- Se conservan las micro-interacciones por objeto: saludo, LEDs en secuencia, escudo «verified», cables, RRG, carpetas, chinchetas, cursor y ventana.
+
+### Modo lectura (antes «modo reclutador»)
+- En ≥ 1024 px, dos columnas: la lateral fija con monograma, contacto, idiomas, disponibilidad y certificaciones; la principal con resumen, experiencia y proyectos. En móvil, una columna.
+- Resumen en ≤ 3 líneas más 4 viñetas; habilidades agrupadas en chips, sin niveles inventados; **un solo botón de PDF por vista**.
+- `@media print`: CV limpio de ≤ 2 páginas A4, sin la escena ni la barra.
 
 ## Contenido
 - **Fuente única de verdad:** `src/data/cv.es.json` y `src/data/cv.en.json`.
