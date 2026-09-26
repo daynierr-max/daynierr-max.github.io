@@ -55,6 +55,7 @@ test.describe('Tarjeta protagonista', () => {
   test('inclinación con el puntero: como mucho 6°, y vuelve a 0 al salir', async ({ page }) => {
     await page.goto('/');
     await band(page).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(500); // tras un scroll, el puntero no cuenta durante 400 ms (evita congelar la sala)
     const box = (await band(page).boundingBox())!;
     const vh = page.viewportSize()!.height;
     // dentro de la parte visible de la franja (su borde inferior puede quedar fuera del viewport)
