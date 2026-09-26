@@ -1,0 +1,6 @@
+/* Inter variable autoalojada (wght + opsz). Sin peticiones externas: CSP font-src 'self'. */
+@import '@fontsource-variable/inter/opsz.css';
+@import './tokens.css';
+@import './base.css';
+@import './app.css';
+@import './scene.css';

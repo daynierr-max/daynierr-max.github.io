@@ -1,0 +1,319 @@
+/* ───────── Escena isométrica ───────── */
+.stage {
+  --amber: #ffb547;
+  position: relative;
+  width: min(100%, calc((100vh - var(--bar-h) - 48px) * 1400 / 1060));
+  min-width: min(100%, 880px);
+  aspect-ratio: 1400 / 1060;
+  margin: 0 auto;
+}
+.scene-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.hotspots {
+  position: absolute;
+  inset: 0;
+}
+.hotspot {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.hotspot::before {
+  /* baliza: indica que el objeto es interactivo */
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: var(--beacon-y, 8%);
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(255, 181, 71, 0.25);
+}
+.hotspot:hover,
+.hotspot:focus-visible {
+  background: rgba(52, 224, 255, 0.07);
+  box-shadow: inset 0 0 0 2px rgba(52, 224, 255, 0.55);
+}
+.hotspot:focus-visible {
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.6), 0 0 0 4px rgb(10 132 255 / 0.6);
+}
+.hs-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translate(-50%, 4px);
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  background: rgb(28 28 30 / 0.78);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14), 0 8px 24px rgb(0 0 0 / 0.35);
+  color: #f5f5f7;
+  font: 600 var(--fs-15) / 1.2 var(--font-sans);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.hotspot:hover .hs-label,
+.hotspot:focus-visible .hs-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (min-width: 768px) {
+  .cards {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .stage {
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 var(--sp-4);
+  }
+  .hotspots {
+    display: none;
+  }
+}
+
+/* Estados por defecto de las micro-interacciones (se activan con .is-active) */
+.scene-svg .arm-wave,
+.scene-svg .face,
+.scene-svg .check,
+.scene-svg .verified {
+  opacity: 0;
+}
+.scene-svg .edge {
+  opacity: 0;
+}
+.scene-svg .rrg-path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* ═════════ Fase 5 · Bucle ambiental (solo transform / opacity) ═════════ */
+.scene-svg .torso,
+.scene-svg .arm,
+.scene-svg .head-inner,
+.scene-svg .shield-body,
+.scene-svg .ring,
+.scene-svg .float,
+.scene-svg .sway,
+.scene-svg .dust,
+.scene-svg .folder,
+.scene-svg .pin,
+.scene-svg .code,
+.scene-svg .sun,
+.scene-svg .win-pane,
+.scene-svg .steam,
+.scene-svg .verified {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.scene-svg .dust {
+  animation: dust calc(9s + var(--i) * 0.37s) ease-in-out calc(var(--i) * -0.9s) infinite;
+}
+@keyframes dust {
+  0%, 100% { transform: translate(0, 0); opacity: 0.15; }
+  50% { transform: translate(var(--dx), var(--dy)); opacity: 0.85; }
+}
+
+.scene-svg .beam { opacity: 0.8; transition: opacity 0.6s; }
+.scene-svg .beam-vol { animation: breathe 7s ease-in-out infinite; }
+@keyframes breathe {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+.scene-svg .sun { animation: sun 6s ease-in-out infinite; }
+@keyframes sun {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.scene-svg .led { animation: led 2.6s steps(1, end) calc(var(--i) * -0.37s) infinite; }
+@keyframes led {
+  0%, 100% { opacity: 1; }
+  40% { opacity: 0.25; }
+  55% { opacity: 1; }
+  80% { opacity: 0.5; }
+}
+
+.scene-svg .flicker { animation: flicker 5.3s linear infinite; }
+@keyframes flicker {
+  0%, 18%, 22%, 61%, 63%, 100% { opacity: 1; }
+  20% { opacity: 0.78; }
+  62% { opacity: 0.88; }
+}
+.scene-svg .screen-glow { animation: breathe 4.5s ease-in-out infinite; }
+
+.scene-svg .code {
+  transform-origin: 0% 50%;
+  animation: typing 6s steps(12, end) calc(var(--i) * 0.45s) infinite;
+}
+@keyframes typing {
+  0% { transform: scaleX(0); }
+  30%, 92% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+
+.scene-svg .torso {
+  transform-origin: 50% 100%;
+  animation: breath 4.2s ease-in-out infinite;
+}
+@keyframes breath {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.015, 1.03); }
+}
+.scene-svg .arm-type { animation: tap 0.42s ease-in-out infinite alternate; }
+.scene-svg .arm-left { animation: tap 0.5s ease-in-out -0.2s infinite alternate; }
+@keyframes tap {
+  from { transform: translateY(0); }
+  to { transform: translateY(-2.5px); }
+}
+.scene-svg .steam { animation: steam 3.2s ease-in-out infinite; }
+@keyframes steam {
+  0% { transform: translateY(4px); opacity: 0; }
+  40% { opacity: 0.5; }
+  100% { transform: translateY(-10px); opacity: 0; }
+}
+
+.scene-svg .neon { animation: neon 9s linear infinite; }
+@keyframes neon {
+  0%, 71%, 73%, 75%, 100% { opacity: 1; }
+  72%, 74% { opacity: 0.35; }
+}
+
+.scene-svg .float { animation: float 5s ease-in-out infinite; }
+.scene-svg .shield-body { animation: float 4.5s ease-in-out infinite; }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+.scene-svg .term-shadow { animation: breathe 5s ease-in-out infinite; }
+.scene-svg .cursor { animation: blink 1.05s steps(1, end) infinite; }
+@keyframes blink {
+  50% { opacity: 0; }
+}
+.scene-svg .ring { animation: ring 3s ease-out infinite; }
+@keyframes ring {
+  0% { transform: scale(0.7); opacity: 0.9; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+.scene-svg .emitter { animation: breathe 3s ease-in-out infinite; }
+
+.scene-svg .node { animation: node 3.4s ease-in-out calc(var(--i) * -0.5s) infinite; }
+@keyframes node {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+.scene-svg .rrg-dot { animation: breathe 1.6s ease-in-out infinite; }
+.scene-svg .sway {
+  transform-origin: 50% 100%;
+  animation: sway 6s ease-in-out infinite;
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-1.2deg); }
+  50% { transform: rotate(1.2deg); }
+}
+
+/* Pausa del bucle mientras hay un panel abierto (ahorra CPU/batería) */
+body:has(#panel[open]) .scene-svg * {
+  animation-play-state: paused;
+}
+
+/* ═════════ Micro-interacciones (.is-active: hover, foco o clic) ═════════ */
+/* Sobre mí: el avatar se gira y saluda */
+#obj-about.is-active .arm-type { opacity: 0; }
+#obj-about.is-active .arm-wave {
+  opacity: 1;
+  transform-origin: 0% 100%;
+  animation: wave 0.5s ease-in-out infinite alternate;
+}
+@keyframes wave {
+  from { transform: rotate(-10deg); }
+  to { transform: rotate(14deg); }
+}
+#obj-about.is-active .face { opacity: 1; }
+#obj-about.is-active .head-inner { transform: translateX(3px) rotate(6deg); }
+.scene-svg .head-inner,
+.scene-svg .face,
+.scene-svg .arm-wave,
+.scene-svg .arm-type { transition: opacity 0.2s, transform 0.3s; }
+
+/* Infra: los LEDs se encienden en secuencia */
+#obj-infra.is-active .led { animation: led-seq 1.4s ease-out calc(var(--i) * 45ms) infinite; }
+@keyframes led-seq {
+  0% { opacity: 0.1; }
+  12% { opacity: 1; }
+  100% { opacity: 0.35; }
+}
+
+/* Ciberseguridad: el escudo pulsa y muestra "verified" */
+#obj-security.is-active .shield-body { animation: pulse 0.9s ease-in-out infinite alternate; }
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.09); }
+}
+#obj-security.is-active .lock { opacity: 0; }
+#obj-security.is-active .check { opacity: 1; }
+#obj-security.is-active .verified { opacity: 1; transform: translateY(-4px); }
+.scene-svg .lock,
+.scene-svg .check,
+.scene-svg .verified { transition: opacity 0.25s, transform 0.3s; }
+
+/* IA/MCP: los cables se iluminan de nodo a nodo */
+#obj-ai.is-active .edge { animation: edge 1.5s ease-in-out calc(var(--i) * 0.12s) infinite; }
+@keyframes edge {
+  0%, 100% { opacity: 0; }
+  30% { opacity: 1; }
+  60% { opacity: 0.2; }
+}
+
+/* Proyectos: el gráfico RRG anima su trayectoria */
+#obj-projects.is-active .rrg-path { animation: draw 1.6s ease-in-out infinite alternate; }
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Experiencia: las carpetas se abren en orden */
+#obj-experience.is-active .folder { animation: folder 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) calc(var(--i) * 0.14s) both; }
+@keyframes folder {
+  to { transform: translateY(-12px) rotate(-5deg); }
+}
+
+/* Certificaciones: las chinchetas caen una a una */
+#obj-certs.is-active .pin { animation: pin 0.55s cubic-bezier(0.5, 0, 0.7, 1.4) calc(var(--i) * 0.13s) both; }
+@keyframes pin {
+  from { transform: translateY(-46px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Terminal: cursor rápido y panel más cerca */
+#obj-terminal.is-active .cursor { animation-duration: 0.5s; }
+#obj-terminal.is-active .float { animation-duration: 1.8s; }
+
+/* Contacto: la ventana se abre y entra luz */
+#obj-contact .win-pane {
+  transform-origin: 100% 50%;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+#obj-contact.is-active .win-pane { transform: scaleX(0.16); }
+#obj-contact.is-active ~ .beam { opacity: 1; }
+#obj-contact .win-glow { transition: opacity 0.6s; opacity: 0.85; }
+#obj-contact.is-active .win-glow { opacity: 1; }

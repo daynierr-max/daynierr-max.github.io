@@ -1,0 +1,217 @@
+/* Estilos exclusivos de /styleguide */
+#sg {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--sp-10) var(--gutter) var(--sp-24);
+}
+.sg-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-10);
+}
+.sg-head h1 {
+  margin: 0;
+  font-size: var(--fs-48);
+  letter-spacing: var(--track-display);
+}
+.sg-head p,
+.sg-muted {
+  margin: var(--sp-1) 0 0;
+  color: var(--text-2);
+}
+.sg-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  width: 100%;
+  font-weight: 600;
+}
+.sg-section {
+  margin-top: var(--sp-16);
+}
+.sg-section > h2 {
+  font-size: var(--fs-34);
+  letter-spacing: var(--track-display);
+  margin: 0 0 var(--sp-6);
+}
+.sg-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.sg-type {
+  display: grid;
+  gap: var(--sp-5);
+}
+.sg-type-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--separator);
+}
+.sg-type-label {
+  font-size: var(--fs-12);
+  color: var(--text-2);
+  font-weight: 600;
+}
+.sg-radius {
+  width: 120px;
+  height: 90px;
+  display: grid;
+  place-items: end start;
+  padding: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow-1), var(--ring);
+  font-size: var(--fs-12);
+  color: var(--text-2);
+  font-weight: 600;
+}
+.sg-squircle {
+  width: 90px;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--accent-fill);
+  color: #fff;
+}
+.sg-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: var(--sp-5);
+}
+.sg-theme {
+  padding: var(--sp-6);
+  border-radius: var(--r-card);
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: var(--ring), var(--shadow-1);
+}
+.sg-theme-title {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-22);
+}
+.sg-block {
+  margin-top: var(--sp-6);
+}
+.sg-block h4 {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-12);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+}
+.sg-glass-demo {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+}
+.sg-blobs span {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+}
+.sg-blobs span:nth-child(1) {
+  left: 20px;
+  top: 10px;
+  background: #ff9f0a;
+}
+.sg-blobs span:nth-child(2) {
+  left: 150px;
+  top: 30px;
+  background: #0a84ff;
+}
+.sg-blobs span:nth-child(3) {
+  right: 30px;
+  top: 0;
+  background: #bf5af2;
+}
+.sg-bar {
+  position: absolute;
+  inset: 20px 0 auto 0;
+}
+.sg-bar .bar-inner {
+  padding: 0 var(--sp-4);
+}
+.sg-swatches {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--sp-3);
+  font-size: var(--fs-12);
+}
+.sg-swatches li {
+  display: grid;
+  gap: 2px;
+}
+.sg-swatches code {
+  color: var(--text-2);
+  font-size: 11px;
+}
+.sg-swatch {
+  height: 44px;
+  border-radius: var(--r-sm);
+  box-shadow: inset 0 0 0 1px var(--separator);
+}
+.sg-card {
+  width: 130px;
+  height: 80px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-card);
+  background: var(--surface);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--text-2);
+}
+.sg-motion {
+  align-items: flex-start;
+  gap: var(--sp-8);
+}
+.sg-motion p {
+  max-width: 460px;
+  color: var(--text-2);
+}
+.sg-curve {
+  width: 320px;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--ring), var(--shadow-1);
+  padding: var(--sp-3);
+}
+.sg-track {
+  position: relative;
+  width: 320px;
+  height: 36px;
+  margin-top: var(--sp-4);
+  border-radius: var(--r-pill);
+  background: var(--fill);
+}
+.sg-dot {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-fill);
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+.sg-track.is-on .sg-dot {
+  transform: translateX(284px);
+}
+@media (max-width: 599px) {
+  .sg-type-row {
+    grid-template-columns: 1fr;
+  }
+}

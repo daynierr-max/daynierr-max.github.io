@@ -1,10 +1,11 @@
-import './styles.css';
+import './styles/index.css';
 import type { Lang, SectionId } from './types.ts';
 import { UI } from './i18n.ts';
 import { renderShell } from './render/shell.ts';
 import { renderPanel } from './render/panels.ts';
 
 const LANG_KEY = 'cv-lang';
+const THEME_KEY = 'cv-theme';
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
 
 let lang: Lang = 'es';
@@ -16,6 +17,36 @@ function storedLang(): Lang | null {
   try {
     const v = localStorage.getItem(LANG_KEY);
     return v === 'es' || v === 'en' ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+type Theme = 'light' | 'dark';
+const currentTheme = (): Theme => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+
+function syncThemeButton(): void {
+  const btn = document.querySelector<HTMLElement>('#theme-toggle');
+  if (!btn) return;
+  btn.setAttribute('aria-label', (currentTheme() === 'dark' ? btn.dataset.labelLight : btn.dataset.labelDark) ?? '');
+}
+
+function setTheme(t: Theme, persist: boolean): void {
+  document.documentElement.dataset.theme = t;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'dark' ? '#000000' : '#f5f5f7');
+  syncThemeButton();
+  if (!persist) return;
+  try {
+    localStorage.setItem(THEME_KEY, t);
+  } catch {
+    /* sin almacenamiento: el tema no se recuerda */
+  }
+}
+
+function storedTheme(): Theme | null {
+  try {
+    const v = localStorage.getItem(THEME_KEY);
+    return v === 'light' || v === 'dark' ? v : null;
   } catch {
     return null;
   }
@@ -46,6 +77,7 @@ function setLang(next: Lang, keepFocus = false): void {
   if (panel?.open) panel.close();
   $('#app').innerHTML = renderShell(lang);
   syncRecruiter();
+  syncThemeButton();
   hideHint(0);
   if (keepFocus) $('#lang-toggle').focus();
   try {
@@ -105,6 +137,10 @@ function bind(): void {
       syncRecruiter(true);
       return;
     }
+    if (t.closest('#theme-toggle')) {
+      setTheme(currentTheme() === 'dark' ? 'light' : 'dark', true);
+      return;
+    }
     if (t.closest('#lang-toggle')) {
       setLang(lang === 'es' ? 'en' : 'es', true);
       return;
@@ -140,6 +176,11 @@ function bind(): void {
 
   window.addEventListener('popstate', () => syncRecruiter());
 
+  // Sin elección guardada, el tema sigue al sistema en vivo.
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!storedTheme()) setTheme(e.matches ? 'dark' : 'light', false);
+  });
+
   // La terminal nunca envía el formulario (aunque se pulse Enter antes de montarse).
   document.addEventListener('submit', (e) => {
     if ((e.target as HTMLElement).closest('.term-line')) e.preventDefault();
@@ -161,6 +202,7 @@ function init(): void {
   if (initial && initial !== 'es') setLang(initial);
   else lang = 'es';
   syncRecruiter();
+  setTheme(storedTheme() ?? currentTheme(), false);
   syncHintText();
   hideHint(3000);
 }

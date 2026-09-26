@@ -29,9 +29,9 @@ test.describe('Móvil (375 px)', () => {
 
   test('Modo reclutador y PDF visibles y funcionando', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('button', { name: 'Modo reclutador' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Descargar PDF' })).toBeVisible();
-    await page.getByRole('button', { name: 'Modo reclutador' }).click();
+    await expect(page.getByRole('button', { name: 'Leer ahora' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Descargar CV' })).toBeVisible();
+    await page.getByRole('button', { name: 'Leer ahora' }).click();
     await expect(page.locator('#recruiter-view')).toBeVisible();
   });
 });

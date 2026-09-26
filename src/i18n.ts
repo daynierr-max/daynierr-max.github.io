@@ -25,6 +25,8 @@ interface UI {
   downloadPdf: string;
   switchLang: string;
   switchLangShort: string;
+  themeDark: string;
+  themeLight: string;
   hint: string;
   hintTouch: string;
   close: string;
@@ -65,13 +67,15 @@ export const UI: Record<Lang, UI> = {
     htmlTitle: 'Daynier Rodríguez — Sistemas, Azure, ciberseguridad e IA · CV interactivo',
     metaDescription:
       'CV interactivo de Daynier Rodríguez Ruíz, técnico de sistemas y soporte IT en Madrid: Microsoft Azure, ciberseguridad, bases de datos e IA aplicada (MCP). Modo reclutador y PDF a un clic.',
-    recruiterMode: 'Modo reclutador',
+    recruiterMode: 'Leer ahora',
     exploreMode: 'Volver a la sala',
-    downloadPdf: 'Descargar PDF',
+    downloadPdf: 'Descargar CV',
     switchLang: 'Switch to English',
     switchLangShort: 'EN',
-    hint: 'Haz clic en los objetos · o pulsa Modo reclutador',
-    hintTouch: 'Toca los objetos · o pulsa Modo reclutador',
+    themeDark: 'Activar tema oscuro',
+    themeLight: 'Activar tema claro',
+    hint: 'Haz clic en los objetos · o pulsa Leer ahora',
+    hintTouch: 'Toca los objetos · o pulsa Leer ahora',
     close: 'Cerrar',
     sceneLabel: 'Sala de operaciones interactiva: cada objeto abre una sección del CV',
     cardsLabel: 'Secciones del CV',
@@ -118,13 +122,15 @@ export const UI: Record<Lang, UI> = {
     htmlTitle: 'Daynier Rodríguez — Systems, Azure, cybersecurity & AI · Interactive CV',
     metaDescription:
       'Interactive CV of Daynier Rodríguez Ruíz, systems & IT support technician in Madrid: Microsoft Azure, cybersecurity, databases and applied AI (MCP). Recruiter mode and PDF in one click.',
-    recruiterMode: 'Recruiter mode',
+    recruiterMode: 'Read now',
     exploreMode: 'Back to the room',
-    downloadPdf: 'Download PDF',
+    downloadPdf: 'Download CV',
     switchLang: 'Cambiar a español',
     switchLangShort: 'ES',
-    hint: 'Click the objects · or press Recruiter mode',
-    hintTouch: 'Tap the objects · or press Recruiter mode',
+    themeDark: 'Switch to dark theme',
+    themeLight: 'Switch to light theme',
+    hint: 'Click the objects · or press Read now',
+    hintTouch: 'Tap the objects · or press Read now',
     close: 'Close',
     sceneLabel: 'Interactive operations room: each object opens a CV section',
     cardsLabel: 'CV sections',

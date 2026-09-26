@@ -35,7 +35,7 @@ Detalle completo en `PLAN_V2_APPSTORE.md`. Se presenta el perfil con el **lengua
 |---|---|
 | Tipografía | **Inter** variable, autoalojada (`@fontsource-variable/inter`, CSP `font-src 'self'`). Monoespaciada **solo** en la terminal |
 | Escala | 12 / 15 / 17 (cuerpo) / 22 / 28 / 34 / 48 / 72 · interlineado 1.1 en titulares y 1.5 en texto |
-| Acento único | Azul `#0A84FF` (oscuro) / `#0071E3` (claro). El ámbar y el cian quedan solo dentro de la ilustración |
+| Acento único | Azul. **Relleno de botón** `#0071E3` (texto blanco, 4.6:1). **Texto/enlaces**: `#0066CC` en claro y `#2997FF` en oscuro. **Texto sobre relleno gris**: `#0062C4` / `#4AA8FF`. Todo ≥ 4.5:1, verificado por `tests/contrast.spec.ts`. El ámbar y el cian quedan solo dentro de la ilustración |
 | Neutros oscuros | `#000` · `#0B0B0F` · superficie `#1C1C1E` · elevada `#2C2C2E` · texto `#F5F5F7` · secundario `#A1A1A6` |
 | Neutros claros | `#F5F5F7` · superficie `#FFF` · texto `#1D1D1F` · secundario `#6E6E73` |
 | Radios | Tarjetas de 22 px · hojas de 28 px · iconos en **squircle real** (trazado de superelipse) |

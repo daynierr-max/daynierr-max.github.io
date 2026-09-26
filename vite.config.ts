@@ -18,5 +18,10 @@ function prerender(): Plugin {
 export default defineConfig({
   base: '/',
   plugins: [prerender()],
-  build: { target: 'es2022', cssMinify: true, modulePreload: { polyfill: false } },
+  build: {
+    target: 'es2022',
+    cssMinify: true,
+    modulePreload: { polyfill: false },
+    rollupOptions: { input: { main: 'index.html', styleguide: 'styleguide/index.html' } },
+  },
 });

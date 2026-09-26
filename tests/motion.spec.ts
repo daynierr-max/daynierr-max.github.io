@@ -11,6 +11,7 @@ test.describe('Movimiento', () => {
     // y todo sigue accesible: el panel abre igual
     await page.locator('.hotspot[data-open="infra"]').click();
     await expect(page.locator('#panel')).toBeVisible();
+    await page.waitForTimeout(250); // con movimiento reducido solo quedan fundidos de 150 ms
     expect(await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length)).toBe(0);
   });
 

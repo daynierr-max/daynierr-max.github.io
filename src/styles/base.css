@@ -1,0 +1,230 @@
+/* ═════════ Base: reset, tipografía, botones y barra de cristal ═════════ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--bar-h) + 16px);
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  font-size: var(--fs-17);
+  line-height: var(--lh-body);
+  letter-spacing: var(--track-body);
+  font-optical-sizing: auto;
+  font-feature-settings: 'cv11', 'ss01'; /* Inter: a de un piso y dígitos claros */
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+
+h1,
+h2,
+h3 {
+  line-height: var(--lh-tight);
+  letter-spacing: var(--track-title);
+  font-weight: 700;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: var(--r-xs);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: var(--r-pill);
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+.skip:focus {
+  top: 10px;
+}
+
+/* ── Botones ── */
+.btn {
+  --h: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: var(--h);
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--r-pill);
+  font: 600 var(--fs-15) / 1 var(--font-sans);
+  letter-spacing: -0.01em;
+  text-decoration: none !important;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    transform var(--dur-1) var(--ease-spring),
+    box-shadow var(--dur-1) var(--ease-out);
+}
+.btn:active {
+  transform: scale(0.96);
+}
+.btn-primary {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+.btn-secondary {
+  background: var(--fill);
+  color: var(--accent-on-fill);
+}
+.btn-secondary:hover {
+  background: var(--fill-2);
+}
+.btn-plain {
+  background: transparent;
+  color: var(--accent);
+  padding: 0 8px;
+}
+.btn-sm {
+  --h: 32px;
+  padding: 0 14px;
+  font-size: var(--fs-15);
+}
+.btn-lg {
+  --h: 50px;
+  padding: 0 28px;
+  font-size: var(--fs-17);
+}
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  font: 600 13px/1 var(--font-sans);
+  cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease-out);
+}
+.btn-icon:hover {
+  background: var(--fill);
+}
+.btn-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ── Barra de cristal ── */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--bar-h);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--glass-border);
+}
+.bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  height: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.bar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--fs-17);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.bar-brand .monogram {
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.18));
+}
+.bar-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* El script de arranque fija siempre data-theme en <html> */
+.theme-icon-dark {
+  display: none;
+}
+[data-theme='dark'] .theme-icon-light {
+  display: none;
+}
+[data-theme='dark'] .theme-icon-dark {
+  display: block;
+}
+
+@media (max-width: 599px) {
+  .lbl-long {
+    display: none;
+  }
+  .bar-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .bar-actions {
+    gap: 4px;
+  }
+  .bar-actions .btn-sm {
+    padding: 0 12px;
+  }
+}
