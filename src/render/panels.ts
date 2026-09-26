@@ -1,7 +1,7 @@
 // Contenido de cada panel de la escena, generado desde el JSON del CV.
 import type { Lang, SectionId } from '../types.ts';
 import { CVS, UI } from '../i18n.ts';
-import { certItem, contactList, esc, jobItem, PDF_HREF, projectItem, skillGroups } from './html.ts';
+import { certItem, contactList, esc, jobItem, projectItem, skillGroups } from './html.ts';
 
 const pick = <T extends { id: string }>(xs: T[], ids: string[]) => xs.filter((x) => ids.includes(x.id));
 const sub = (title: string, body: string) => `<section class="sub"><h3 class="sub-title">${esc(title)}</h3>${body}</section>`;
@@ -52,7 +52,7 @@ ${sub(h.education, `<ul class="list">${cv.education
     case 'contact':
       body = `<p class="lead">${esc(ui.contactLead)}</p>
 ${contactList(cv)}
-<p class="panel-actions"><a class="btn btn-solid" href="mailto:${esc(cv.basics.email)}">${esc(ui.writeMe)}</a> <a class="btn btn-outline" href="${PDF_HREF}" download>${esc(ui.downloadPdf)}</a></p>`;
+<p class="panel-actions"><a class="btn btn-solid" href="mailto:${esc(cv.basics.email)}">${esc(ui.writeMe)}</a></p>`;
       break;
     case 'terminal':
       body = `<div class="term" data-terminal>

@@ -3,8 +3,8 @@ import { test, expect } from '@playwright/test';
 test.describe('Carga inicial', () => {
   test('Modo reclutador y PDF visibles desde la carga', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('button', { name: 'Modo reclutador' })).toBeVisible();
-    const pdf = page.getByRole('link', { name: 'Descargar PDF' });
+    await expect(page.getByRole('button', { name: 'Leer ahora' })).toBeVisible();
+    const pdf = page.getByRole('link', { name: 'Obtener CV' }).first();
     await expect(pdf).toBeVisible();
     await expect(pdf).toHaveAttribute('href', '/Daynier_Rodriguez_CV2026.pdf');
     const res = await page.request.get('/Daynier_Rodriguez_CV2026.pdf');
@@ -21,11 +21,11 @@ test.describe('Carga inicial', () => {
   });
 });
 
-test.describe('Modo reclutador', () => {
+test.describe('Leer ahora', () => {
   test('un clic muestra el CV clásico y otro vuelve a la sala', async ({ page }) => {
     await page.goto('/');
     const toggle = page.locator('#recruiter-toggle');
-    await toggle.click();
+    await page.locator('[data-read]').click();
     await expect(toggle).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#recruiter-view')).toBeVisible();
     await expect(page.locator('#scene-view')).toBeHidden();
@@ -39,7 +39,7 @@ test.describe('Modo reclutador', () => {
     await expect(sheet).not.toContainText('634'); // el teléfono no se publica en la web
     await toggle.click();
     await expect(page.locator('#scene-view')).toBeVisible();
-    await expect(toggle).toHaveText('Modo reclutador');
+    await expect(toggle).toHaveText('Leer ahora');
   });
 
   test('se puede enlazar directamente con #cv', async ({ page }) => {
@@ -49,7 +49,7 @@ test.describe('Modo reclutador', () => {
 
   test('funciona con teclado', async ({ page }) => {
     await page.goto('/');
-    await page.locator('#recruiter-toggle').focus();
+    await page.locator('[data-read]').focus();
     await page.keyboard.press('Enter');
     await expect(page.locator('#recruiter-view')).toBeVisible();
   });
@@ -61,10 +61,10 @@ test.describe('Idioma', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'es');
     await page.locator('#lang-toggle').click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-    await expect(page.getByRole('button', { name: 'Recruiter mode' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Download PDF' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Read now' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Get CV' }).first()).toBeVisible();
     await expect(page.locator('#lang-toggle')).toBeFocused();
-    await page.locator('#recruiter-toggle').click();
+    await page.locator('[data-read]').click();
     await expect(page.locator('#recruiter-view')).toContainText('Professional experience');
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');

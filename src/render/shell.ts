@@ -3,27 +3,52 @@ import type { Lang } from '../types.ts';
 import { CVS, UI } from '../i18n.ts';
 import { esc, PDF_HREF } from './html.ts';
 import { renderRecruiter } from './recruiter.ts';
-import { renderScene, renderCards } from './scene.ts';
+import { renderScene } from './scene.ts';
+import { renderApps, renderContact, renderInfo, renderNews, renderPreview, renderProductHead, renderStats, renderVersions } from './product.ts';
+import { monogram } from './squircle.ts';
+
+// Iconos del conmutador de tema (trazos propios, estilo línea).
+const SUN = `<svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>`;
+const MOON = `<svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 14.6A8.5 8.5 0 0 1 9.4 3.8a8.5 8.5 0 1 0 10.8 10.8Z"/></svg>`;
 
 export function renderShell(lang: Lang): string {
   const ui = UI[lang];
   const cv = CVS[lang];
   return `<a class="skip" href="#main" data-t="skip">${lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
-<header class="topbar">
-  <h1 class="brand"><span class="brand-name">${esc(cv.basics.name)}</span><span class="brand-role" data-t="role">${esc(
-    cv.basics.headline.split('|').slice(0, 3).join('·'),
-  )}</span></h1>
-  <div class="actions">
-    <button id="lang-toggle" class="btn btn-ghost" type="button" lang="${lang === 'es' ? 'en' : 'es'}"><span class="sr-only">${esc(ui.switchLang)}: </span>${esc(ui.switchLangShort)}</button>
-    <button id="recruiter-toggle" class="btn btn-solid" type="button" aria-pressed="false" aria-controls="recruiter-view">${esc(ui.recruiterMode)}</button>
-    <a id="pdf-link" class="btn btn-outline" href="${PDF_HREF}" download aria-label="${esc(ui.downloadPdf)}"><span class="lbl-long">${esc(ui.downloadPdf.replace(/\s*PDF$/, ''))} </span>PDF</a>
+<header class="bar">
+  <div class="bar-inner">
+    <a class="bar-brand" href="#top">${monogram(28)}<span class="bar-name">${esc(cv.basics.name)}</span></a>
+    <div class="bar-actions">
+      <button id="lang-toggle" class="btn-icon" type="button" lang="${lang === 'es' ? 'en' : 'es'}"><span class="sr-only">${esc(ui.switchLang)}: </span>${esc(ui.switchLangShort)}</button>
+      <button id="theme-toggle" class="btn-icon" type="button" aria-label="${esc(ui.themeDark)}" data-label-dark="${esc(ui.themeDark)}" data-label-light="${esc(ui.themeLight)}">${SUN}${MOON}</button>
+      <button id="recruiter-toggle" class="btn btn-secondary btn-sm bar-cta" type="button" aria-pressed="false" aria-controls="recruiter-view">${esc(ui.recruiterMode)}</button>
+      <a id="pdf-link" class="btn btn-primary btn-sm bar-cta" href="${PDF_HREF}" download aria-label="${esc(ui.downloadPdf)}"><span class="lbl-long">${esc(ui.downloadPdf.replace(/\s*CV$/, ''))} </span>CV</a>
+    </div>
   </div>
 </header>
 <main id="main" tabindex="-1">
-  <section id="scene-view" aria-label="${esc(ui.sceneLabel)}">
-    ${renderScene(lang)}
-    ${renderCards(lang)}
-  </section>
+  <div id="scene-view">
+   <div class="product">
+    ${renderProductHead(lang)}
+    ${renderStats(lang)}
+   </div>
+    <section class="hero" aria-labelledby="hero-title">
+      <h2 id="hero-title" class="sr-only">${esc(ui.product.sceneTitle)}</h2>
+      <p class="sr-only">${esc(ui.sceneLabel)}</p>
+      <div class="hero-band">
+        <div class="stage-tilt">${renderScene(lang)}</div>
+        <button class="light-switch" type="button" role="switch" aria-checked="false" data-light><span class="ls-track" aria-hidden="true"><span class="ls-knob"></span></span><span class="ls-text">${esc(ui.product.lightOn)}</span></button>
+      </div>
+    </section>
+   <div class="product">
+    ${renderApps(lang)}
+    ${renderPreview(lang)}
+    ${renderNews(lang)}
+    ${renderVersions(lang)}
+    ${renderInfo(lang)}
+    ${renderContact(lang)}
+   </div>
+  </div>
   <section id="recruiter-view" hidden>
     ${renderRecruiter(lang)}
   </section>

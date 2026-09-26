@@ -6,3 +6,4 @@ playwright-report/
 docs/*.docx
 .DS_Store
 screenshots/
+.claude/

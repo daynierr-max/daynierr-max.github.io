@@ -1,0 +1,320 @@
+/* Estilos exclusivos de /styleguide */
+#sg {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--sp-10) var(--gutter) var(--sp-24);
+}
+.sg-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-10);
+}
+.sg-head h1 {
+  margin: 0;
+  font-size: var(--fs-48);
+  letter-spacing: var(--track-display);
+}
+.sg-head p,
+.sg-muted {
+  margin: var(--sp-1) 0 0;
+  color: var(--text-2);
+}
+.sg-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  width: 100%;
+  font-weight: 600;
+}
+.sg-section {
+  margin-top: var(--sp-16);
+}
+.sg-section > h2 {
+  font-size: var(--fs-34);
+  letter-spacing: var(--track-display);
+  margin: 0 0 var(--sp-6);
+}
+.sg-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.sg-type {
+  display: grid;
+  gap: var(--sp-5);
+}
+.sg-type-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--separator);
+}
+.sg-type-label {
+  font-size: var(--fs-12);
+  color: var(--text-2);
+  font-weight: 600;
+}
+.sg-radius {
+  width: 120px;
+  height: 90px;
+  display: grid;
+  place-items: end start;
+  padding: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow-1), var(--ring);
+  font-size: var(--fs-12);
+  color: var(--text-2);
+  font-weight: 600;
+}
+.sg-squircle {
+  width: 90px;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--accent-fill);
+  color: #fff;
+}
+.sg-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: var(--sp-5);
+}
+.sg-theme {
+  padding: var(--sp-6);
+  border-radius: var(--r-card);
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: var(--ring), var(--shadow-1);
+}
+.sg-theme-title {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-22);
+}
+.sg-block {
+  margin-top: var(--sp-6);
+}
+.sg-block h4 {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-12);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+}
+.sg-glass-demo {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+}
+.sg-blobs span {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+}
+.sg-blobs span:nth-child(1) {
+  left: 20px;
+  top: 10px;
+  background: #ff9f0a;
+}
+.sg-blobs span:nth-child(2) {
+  left: 150px;
+  top: 30px;
+  background: #0a84ff;
+}
+.sg-blobs span:nth-child(3) {
+  right: 30px;
+  top: 0;
+  background: #bf5af2;
+}
+.sg-bar {
+  position: absolute;
+  inset: 20px 0 auto 0;
+}
+.sg-bar .bar-inner {
+  padding: 0 var(--sp-4);
+}
+.sg-swatches {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--sp-3);
+  font-size: var(--fs-12);
+}
+.sg-swatches li {
+  display: grid;
+  gap: 2px;
+}
+.sg-swatches code {
+  color: var(--text-2);
+  font-size: 11px;
+}
+.sg-swatch {
+  height: 44px;
+  border-radius: var(--r-sm);
+  box-shadow: inset 0 0 0 1px var(--separator);
+}
+.sg-card {
+  width: 130px;
+  height: 80px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-card);
+  background: var(--surface);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--text-2);
+}
+.sg-motion {
+  align-items: flex-start;
+  gap: var(--sp-8);
+}
+.sg-motion p {
+  max-width: 460px;
+  color: var(--text-2);
+}
+.sg-curve {
+  width: 320px;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--ring), var(--shadow-1);
+  padding: var(--sp-3);
+}
+.sg-track {
+  position: relative;
+  width: 320px;
+  height: 36px;
+  margin-top: var(--sp-4);
+  border-radius: var(--r-pill);
+  background: var(--fill);
+}
+.sg-dot {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-fill);
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+.sg-track.is-on .sg-dot {
+  transform: translateX(284px);
+}
+@media (max-width: 599px) {
+  .sg-type-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Iconos ── */
+.app-icon {
+  display: block;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.14)) drop-shadow(0 10px 18px rgb(0 0 0 / 0.14));
+}
+.sg-iconsheets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: var(--sp-5);
+  margin-top: var(--sp-8);
+}
+.sg-iconsheet {
+  padding: var(--sp-5);
+  border-radius: var(--r-card);
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: var(--ring), var(--shadow-1);
+  overflow-x: auto;
+}
+.sg-iconsheet table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.sg-iconsheet th,
+.sg-iconsheet td {
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: var(--fs-12);
+  color: var(--text-2);
+}
+.sg-iconsheet tbody th {
+  color: var(--text);
+  font-size: var(--fs-15);
+  font-weight: 600;
+}
+.sg-iconsheet tr + tr {
+  border-top: 1px solid var(--separator);
+}
+.sg-sub {
+  margin: var(--sp-12) 0 var(--sp-4);
+  font-size: var(--fs-22);
+}
+.sg-icon1024 {
+  display: grid;
+  gap: var(--sp-8);
+}
+.sg-icon1024 figure,
+.sg-shelf figure {
+  margin: 0;
+}
+.sg-icon1024 .app-icon {
+  max-width: 100%;
+  height: auto;
+}
+.sg-icon1024 figcaption,
+.sg-shelf figcaption {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--text-2);
+  text-align: center;
+}
+/* Estante de cristal con reflejo (inspirado en la presentación de galerías de iconos) */
+.sg-shelf-demo {
+  padding: var(--sp-8) var(--sp-5) var(--sp-5);
+  border-radius: var(--r-card);
+  background: var(--bg);
+  box-shadow: var(--ring);
+  overflow-x: auto;
+}
+.sg-shelf {
+  position: relative;
+  display: flex;
+  gap: var(--sp-6);
+  justify-content: center;
+  padding: 0 var(--sp-6);
+  min-width: max-content;
+}
+/* estante de cristal: su cara superior coincide con la base de los iconos */
+.sg-shelf::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 88px;
+  height: 22px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgb(125 211 252 / 0.28), rgb(255 255 255 / 0.55) 40%, rgb(196 181 253 / 0.32));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 -1px 0 rgb(0 0 0 / 0.04), 0 14px 28px rgb(0 0 0 / 0.07);
+  z-index: 1;
+}
+.sg-shelf .app-icon {
+  position: relative;
+  z-index: 2;
+  -webkit-box-reflect: below 2px linear-gradient(transparent 70%, rgb(255 255 255 / 0.22));
+}
+.sg-shelf figcaption {
+  position: relative;
+  z-index: 2;
+  margin-top: 44px;
+}

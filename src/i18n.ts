@@ -25,7 +25,10 @@ interface UI {
   downloadPdf: string;
   switchLang: string;
   switchLangShort: string;
+  themeDark: string;
+  themeLight: string;
   hint: string;
+  hintTouch: string;
   close: string;
   sceneLabel: string;
   cardsLabel: string;
@@ -49,6 +52,31 @@ interface UI {
   contactLead: string;
   writeMe: string;
   footer: string;
+  product: {
+    getCv: string;
+    getCvSub: string;
+    readNow: string;
+    more: string;
+    less: string;
+    sceneTitle: string;
+    lightOn: string;
+    stats: { experience: string; years: string; yearsSub: string; certs: string; certsSub: string; location: string; languages: string; availability: string };
+    appsTitle: string;
+    appsLabel: string;
+    preview: string;
+    prev: string;
+    next: string;
+    github: string;
+    site: string;
+    news: string;
+    version: string;
+    newsItems: { study: string; cert: string; project: string };
+    versions: string;
+    info: string;
+    infoRows: { provider: string; category: string; compatibility: string; languages: string; size: string; location: string; availability: string; built: string };
+    builtValue: string;
+    contact: string;
+  };
   terminal: {
     welcome: string;
     prompt: string;
@@ -64,12 +92,15 @@ export const UI: Record<Lang, UI> = {
     htmlTitle: 'Daynier Rodríguez — Sistemas, Azure, ciberseguridad e IA · CV interactivo',
     metaDescription:
       'CV interactivo de Daynier Rodríguez Ruíz, técnico de sistemas y soporte IT en Madrid: Microsoft Azure, ciberseguridad, bases de datos e IA aplicada (MCP). Modo reclutador y PDF a un clic.',
-    recruiterMode: 'Modo reclutador',
+    recruiterMode: 'Leer ahora',
     exploreMode: 'Volver a la sala',
-    downloadPdf: 'Descargar PDF',
+    downloadPdf: 'Descargar CV',
     switchLang: 'Switch to English',
     switchLangShort: 'EN',
-    hint: 'Haz clic en los objetos · o pulsa Modo reclutador',
+    themeDark: 'Activar tema oscuro',
+    themeLight: 'Activar tema claro',
+    hint: 'Haz clic en los objetos · o pulsa Leer ahora',
+    hintTouch: 'Toca los objetos · o pulsa Leer ahora',
     close: 'Cerrar',
     sceneLabel: 'Sala de operaciones interactiva: cada objeto abre una sección del CV',
     cardsLabel: 'Secciones del CV',
@@ -103,6 +134,49 @@ export const UI: Record<Lang, UI> = {
     contactLead: 'Disponibilidad inmediata en Madrid. La forma más rápida de hablar conmigo es por email o LinkedIn.',
     writeMe: 'Escríbeme',
     footer: 'Escena SVG generada por código · sin imágenes de terceros',
+    product: {
+      getCv: 'Obtener CV',
+      getCvSub: 'PDF · 2 páginas',
+      readNow: 'Leer ahora',
+      more: 'más',
+      less: 'menos',
+      sceneTitle: 'La sala de operaciones',
+      lightOn: 'Encender la luz',
+      stats: {
+        experience: 'Experiencia',
+        years: 'años',
+        yearsSub: 'sistemas y redes',
+        certs: 'Certificaciones',
+        certsSub: 'obtenidas',
+        location: 'Ubicación',
+        languages: 'Idiomas',
+        availability: 'Disponibilidad',
+      },
+      appsTitle: 'Explora el perfil',
+      appsLabel: 'Secciones del perfil',
+      preview: 'Vista previa',
+      prev: 'Proyecto anterior',
+      next: 'Proyecto siguiente',
+      github: 'Ver en GitHub',
+      site: 'Visitar web',
+      news: 'Novedades',
+      version: 'Versión 2026',
+      newsItems: { study: 'Formación en curso', cert: 'Certificación en preparación', project: 'Proyecto destacado' },
+      versions: 'Historial de versiones',
+      info: 'Información',
+      infoRows: {
+        provider: 'Proveedor',
+        category: 'Categoría',
+        compatibility: 'Compatibilidad',
+        languages: 'Idiomas',
+        size: 'Tamaño de esta web',
+        location: 'Ubicación',
+        availability: 'Disponibilidad',
+        built: 'Hecha con',
+      },
+      builtValue: 'Vite + TypeScript · SVG generado por código',
+      contact: '¿Hablamos?',
+    },
     terminal: {
       welcome: 'night-ops shell · escribe «help» para ver los comandos',
       prompt: 'daynier@night-ops:~$',
@@ -116,12 +190,15 @@ export const UI: Record<Lang, UI> = {
     htmlTitle: 'Daynier Rodríguez — Systems, Azure, cybersecurity & AI · Interactive CV',
     metaDescription:
       'Interactive CV of Daynier Rodríguez Ruíz, systems & IT support technician in Madrid: Microsoft Azure, cybersecurity, databases and applied AI (MCP). Recruiter mode and PDF in one click.',
-    recruiterMode: 'Recruiter mode',
+    recruiterMode: 'Read now',
     exploreMode: 'Back to the room',
-    downloadPdf: 'Download PDF',
+    downloadPdf: 'Download CV',
     switchLang: 'Cambiar a español',
     switchLangShort: 'ES',
-    hint: 'Click the objects · or press Recruiter mode',
+    themeDark: 'Switch to dark theme',
+    themeLight: 'Switch to light theme',
+    hint: 'Click the objects · or press Read now',
+    hintTouch: 'Tap the objects · or press Read now',
     close: 'Close',
     sceneLabel: 'Interactive operations room: each object opens a CV section',
     cardsLabel: 'CV sections',
@@ -155,6 +232,49 @@ export const UI: Record<Lang, UI> = {
     contactLead: 'Available immediately in Madrid. The fastest way to reach me is by email or LinkedIn.',
     writeMe: 'Email me',
     footer: 'SVG scene generated by code · no third-party images',
+    product: {
+      getCv: 'Get CV',
+      getCvSub: 'PDF · 2 pages',
+      readNow: 'Read now',
+      more: 'more',
+      less: 'less',
+      sceneTitle: 'The operations room',
+      lightOn: 'Turn on the light',
+      stats: {
+        experience: 'Experience',
+        years: 'years',
+        yearsSub: 'systems & networks',
+        certs: 'Certifications',
+        certsSub: 'earned',
+        location: 'Location',
+        languages: 'Languages',
+        availability: 'Availability',
+      },
+      appsTitle: 'Explore the profile',
+      appsLabel: 'Profile sections',
+      preview: 'Preview',
+      prev: 'Previous project',
+      next: 'Next project',
+      github: 'View on GitHub',
+      site: 'Visit site',
+      news: "What's new",
+      version: 'Version 2026',
+      newsItems: { study: 'Currently studying', cert: 'Certification in progress', project: 'Featured project' },
+      versions: 'Version history',
+      info: 'Information',
+      infoRows: {
+        provider: 'Provider',
+        category: 'Category',
+        compatibility: 'Compatibility',
+        languages: 'Languages',
+        size: 'Size of this site',
+        location: 'Location',
+        availability: 'Availability',
+        built: 'Built with',
+      },
+      builtValue: 'Vite + TypeScript · code-generated SVG',
+      contact: "Let's talk",
+    },
     terminal: {
       welcome: 'night-ops shell · type "help" to list commands',
       prompt: 'daynier@night-ops:~$',

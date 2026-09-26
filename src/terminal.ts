@@ -1,4 +1,4 @@
-// Easter egg: terminal con comandos. Se carga bajo demanda (chunk aparte).
+// Easter egg: terminal con comandos.
 import type { Lang } from './types.ts';
 import { CVS, UI } from './i18n.ts';
 import { PDF_HREF } from './render/html.ts';

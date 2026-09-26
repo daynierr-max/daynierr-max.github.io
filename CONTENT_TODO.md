@@ -10,5 +10,10 @@ Fuente: `docs/Daynier_Rodriguez_CV2026.pdf` (versión del 26/09/2026).
 - Repo: `daynierr-max/daynierr-max.github.io` → https://daynierr-max.github.io/
 - Apps Gemini: se enlazan los 3 repos públicos (Busca_Farma, Blog, Proyecto_1 "Luz Fácil"), que corresponden a las "tres apps React" del CV.
 
+## Decisiones v2 (26/09/2026)
+- **Credencial Google Cybersecurity**: ✅ `https://www.coursera.org/account/accomplishments/professional-cert/XUCBUQ2O56IQ`, verificada en el navegador («Completado por Daynier Rodríguez Ruíz · 27 ene 2025», 8 cursos).
+- **«Ruíz» con tilde**: se mantiene. Así figura también en la credencial de Coursera.
+- **Contador de certificaciones**: se muestran **8 obtenidas**. AZ-104 aparece aparte («en preparación», en Novedades).
+
 ## Pendiente
-1. **URL de la credencial del Google Cybersecurity Certificate**: no aparece en Gmail ni en los archivos locales. Se obtiene en Coursera → Logros → Compartir certificado (`coursera.org/verify/professional-cert/…`). Mientras tanto, el escudo muestra "verified · Coursera 2025" sin enlace. → `certifications[2].credentialUrl`
+1. **Skills agénticas en el PDF**: el usuario las añadirá al PDF más adelante. Mientras tanto, la web las muestra y el PDF no.

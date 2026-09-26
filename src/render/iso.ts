@@ -36,37 +36,38 @@ export interface Faces {
 
 export const faces = (base: string): Faces => ({ top: shade(base, 0.12), left: shade(base, -0.18), right: shade(base, -0.38) });
 
-/** Caja sólida: dibuja solo las tres caras visibles. */
-export function box(x: number, y: number, z: number, w: number, d: number, h: number, c: string | Faces, attrs = ''): string {
+/**
+ * Caja sólida: dibuja solo las tres caras visibles. Con `shade` (por defecto) cada cara lateral
+ * recibe una capa de degradado compartida (#sh-side, #sh-top) para que no quede en color plano.
+ */
+export function box(x: number, y: number, z: number, w: number, d: number, h: number, c: string | Faces, attrs = '', shade = true): string {
   const f = typeof c === 'string' ? faces(c) : c;
   const X = x + w;
   const Y = y + d;
   const T = z + h;
-  return `<g${attrs ? ' ' + attrs : ''}>${poly(
-    [
-      [x, Y, z],
-      [X, Y, z],
-      [X, Y, T],
-      [x, Y, T],
-    ],
-    f.left,
-  )}${poly(
-    [
-      [X, y, z],
-      [X, Y, z],
-      [X, Y, T],
-      [X, y, T],
-    ],
-    f.right,
-  )}${poly(
-    [
-      [x, y, T],
-      [X, y, T],
-      [X, Y, T],
-      [x, Y, T],
-    ],
-    f.top,
-  )}</g>`;
+  const left: V3[] = [
+    [x, Y, z],
+    [X, Y, z],
+    [X, Y, T],
+    [x, Y, T],
+  ];
+  const right: V3[] = [
+    [X, y, z],
+    [X, Y, z],
+    [X, Y, T],
+    [X, y, T],
+  ];
+  const top: V3[] = [
+    [x, y, T],
+    [X, y, T],
+    [X, Y, T],
+    [x, Y, T],
+  ];
+  // Sombreado solo en piezas con presencia (las muy finas no lo necesitan y ahorran nodos)
+  const sh = shade && h >= 0.25 && Math.max(w, d) >= 0.3;
+  return `<g${attrs ? ' ' + attrs : ''}>${poly(left, f.left)}${sh ? poly(left, 'url(#sh-side)') : ''}${poly(right, f.right)}${
+    sh ? poly(right, 'url(#sh-side)') : ''
+  }${poly(top, f.top)}${sh ? poly(top, 'url(#sh-top)') : ''}</g>`;
 }
 
 const m = (a: number, b: number, c: number, d: number, [e, f]: V2) => `matrix(${[a, b, c, d, e, f].map((n) => r1(n * 1000) / 1000).join(' ')})`;

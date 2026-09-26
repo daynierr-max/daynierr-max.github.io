@@ -2,16 +2,28 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Movimiento', () => {
   test('con prefers-reduced-motion no hay animaciones en marcha', async ({ page }) => {
+    // Lista legible de lo que siga en marcha (si falla, el mensaje dice qué es)
+    const running = () =>
+      page.evaluate(() =>
+        document
+          .getAnimations()
+          .filter((a) => a.playState === 'running')
+          .map((a) => {
+            const t = (a.effect as KeyframeEffect).target as Element | null;
+            const name = (a as CSSAnimation).animationName ?? (a as CSSTransition).transitionProperty;
+            return `${a.constructor.name}:${name} ${t?.tagName}.${t?.getAttribute('class') ?? ''}#${t?.id ?? ''}`;
+          }),
+      );
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     await page.locator('.hotspot[data-open="infra"]').hover(); // micro-interacción incluida
     await page.waitForTimeout(300);
-    const running = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length);
-    expect(running).toBe(0);
+    expect(await running()).toEqual([]);
     // y todo sigue accesible: el panel abre igual
     await page.locator('.hotspot[data-open="infra"]').click();
     await expect(page.locator('#panel')).toBeVisible();
-    expect(await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length)).toBe(0);
+    await page.waitForTimeout(250); // con movimiento reducido solo quedan fundidos de 150 ms
+    expect(await running()).toEqual([]);
   });
 
   test('sin preferencia, el bucle ambiental está en marcha', async ({ page }) => {
@@ -31,7 +43,7 @@ test.describe('Movimiento', () => {
     await expect(page.locator('#obj-certs')).toHaveClass(/is-active/);
   });
 
-  test('las animaciones solo usan transform, opacity o trazo SVG', async ({ page }) => {
+  test('el bucle solo anima transform, rotate, opacity o trazo SVG', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/');
     for (const id of ['about', 'infra', 'security', 'ai', 'projects', 'experience', 'certs', 'contact', 'terminal']) {
@@ -39,7 +51,10 @@ test.describe('Movimiento', () => {
     }
     const props = await page.evaluate(() => {
       const set = new Set<string>();
-      for (const a of document.getAnimations()) {
+      // Solo animaciones CSS en bucle; las transiciones del hover (filter) son puntuales
+      // (la expansión de la sala va ligada al scroll, no al tiempo: no es parte del bucle)
+      const scrollDriven = (x: Animation) => typeof ViewTimeline !== 'undefined' && x.timeline instanceof ViewTimeline;
+      for (const a of document.getAnimations().filter((x) => x instanceof CSSAnimation && !scrollDriven(x))) {
         const eff = a.effect as KeyframeEffect | null;
         for (const kf of eff?.getKeyframes() ?? []) {
           for (const k of Object.keys(kf)) if (!['offset', 'easing', 'composite', 'computedOffset'].includes(k)) set.add(k);
@@ -47,6 +62,6 @@ test.describe('Movimiento', () => {
       }
       return [...set];
     });
-    for (const p of props) expect(['transform', 'opacity', 'strokeDashoffset']).toContain(p);
+    for (const p of props) expect(['transform', 'rotate', 'opacity', 'strokeDashoffset']).toContain(p);
   });
 });
