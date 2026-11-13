@@ -368,30 +368,83 @@ function avatar(): string {
     <rect x="-2" y="-48" width="20" height="14" rx="4" fill="#1b2744"/>
     <text x="8" y="-37.5" font-family="ui-monospace,monospace" font-size="10" font-weight="700" fill="${C.cyan}" text-anchor="middle">&gt;_</text>
   </g>
-  <g class="arm arm-left">
-    <path d="M-20 -62 L4 -41" stroke="#2c4470" stroke-width="16" stroke-linecap="round"/>
-    <path d="M6 -40 L68 -62" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
-    <circle cx="72" cy="-62" r="8.5" fill="#c98d6a"/>
-  </g>
-  <g class="arm arm-type">
-    <path d="M24 -66 L48 -45" stroke="#3b5a8c" stroke-width="16" stroke-linecap="round"/>
-    <path d="M50 -43 L90 -58" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
-    <circle cx="94" cy="-58" r="8.5" fill="#d59a74"/>
-  </g>
+  <g class="arm arm-type">${limb([24, -66], [48, -45], [88, -58], FAR, true)}</g>
+  <g class="arm arm-left">${limb([-20, -62], [4, -41], [64, -61], NEAR, true)}</g>
   <g class="arm arm-stretch">
-    <path d="M-20 -62 L-30 -96" stroke="#2c4470" stroke-width="16" stroke-linecap="round"/>
-    <path d="M-31 -99 L-26 -136" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
-    <circle cx="-25" cy="-142" r="8.5" fill="#c98d6a"/>
-    <path d="M24 -66 L34 -100" stroke="#3b5a8c" stroke-width="16" stroke-linecap="round"/>
-    <path d="M35 -103 L30 -140" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
-    <circle cx="29" cy="-146" r="8.5" fill="#d59a74"/>
+    ${limb([-20, -62], [-30, -97], [-26, -134], NEAR)}
+    ${limb([24, -66], [34, -101], [30, -138], FAR)}
   </g>
-  <g class="arm arm-wave">
-    <path d="M24 -66 L48 -92" stroke="#3b5a8c" stroke-width="16" stroke-linecap="round"/>
-    <path d="M50 -95 L58 -130" stroke="url(#tf-skin)" stroke-width="13" stroke-linecap="round"/>
-    <circle cx="59" cy="-138" r="10" fill="#d59a74"/>
-  </g>
+  <g class="arm arm-wave">${limb([24, -66], [49, -93], [57, -127], FAR)}</g>
 </g>`;
+}
+
+// Brazos de figura de juguete: manga y antebrazo cónicos (más anchos en el codo que en la
+// muñeca), sombra inferior para dar volumen y mano tipo manopla con pulgar. El brazo lejano
+// va más oscuro y detrás del cercano, para que se lea la profundidad.
+type Pt = [number, number];
+type Tone = { sleeve: string; sleeveShade: string; skin: string; skinShade: string };
+const NEAR: Tone = { sleeve: '#3b5a8c', sleeveShade: '#24385f', skin: '#d9a07a', skinShade: '#9e6648' };
+const FAR: Tone = { sleeve: '#2a4170', sleeveShade: '#1a2847', skin: '#bb8260', skinShade: '#83523a' };
+const f1 = (n: number) => n.toFixed(1);
+
+// Piernas sentadas (mira hacia −y, a los monitores): pantalón negro y tenis del color de la
+// camiseta con suela blanca. En mundo isométrico; las espinillas y los tenis se pintan antes del
+// asiento (quedan detrás de su borde) y los muslos, después (apoyan encima).
+const PANTS = { fill: '#1d1f26', shade: '#0b0c10' };
+const SHOE = { upper: '#4a6a9e', upperShade: '#2c4470', sole: '#f4f5f7', soleShade: '#b9bfcb' };
+
+function legs(part: 'lower' | 'upper'): string {
+  // Primero la pierna lejana (x menor), luego la cercana.
+  return [6.17, 6.53]
+    .map((x) => {
+      const hip = P(x, 6.2, 1.1);
+      const knee = P(x, 5.47, 1.12);
+      const ankle = P(x, 5.36, 0.16);
+      if (part === 'upper') {
+        return `${taper(hip, knee, 17, 15, PANTS.shade, 2.2)}${taper(hip, knee, 16, 14, PANTS.fill)}
+          <path d="M${f1(hip[0])} ${f1(hip[1] - 6.5)} L${f1(knee[0])} ${f1(knee[1] - 5.5)}" stroke="#fff" stroke-opacity=".1" stroke-width="2" stroke-linecap="round"/>`;
+      }
+      const heel = P(x, 5.44, 0.05);
+      const toe = P(x, 5.0, 0.05);
+      const heelUp = P(x, 5.42, 0.15);
+      const toeUp = P(x, 5.06, 0.1);
+      const lace = (t: number) => P(x, 5.3 - t * 0.09, 0.2 - t * 0.025);
+      return `<ellipse cx="${f1((heel[0] + toe[0]) / 2)}" cy="${f1((heel[1] + toe[1]) / 2 + 5)}" rx="20" ry="4.5" fill="#000" opacity=".3"/>
+        ${taper(knee, ankle, 14, 11, PANTS.shade, 1.6)}${taper(knee, ankle, 13, 10, PANTS.fill)}
+        ${taper(heel, toe, 10, 9, SHOE.soleShade, 2)}${taper(heel, toe, 10, 9, SHOE.sole)}
+        ${taper(heelUp, toeUp, 13, 10, SHOE.upperShade, 1.2)}${taper(heelUp, toeUp, 12, 9, SHOE.upper)}
+        <path d="M${f1(toeUp[0] - 4)} ${f1(toeUp[1] - 3)} q4 -1 6 1" stroke="#fff" stroke-opacity=".25" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        ${[0, 1, 2].map((t) => { const [lx, ly] = lace(t); return `<path d="M${f1(lx - 2.6)} ${f1(ly - 1.4)} L${f1(lx + 2.6)} ${f1(ly + 1.4)}" stroke="${SHOE.sole}" stroke-width="1.4" stroke-linecap="round"/>`; }).join('')}`;
+    })
+    .join('');
+}
+
+function taper(a: Pt, b: Pt, wa: number, wb: number, fill: string, dy = 0): string {
+  const l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+  const nx = -(b[1] - a[1]) / l;
+  const ny = (b[0] - a[0]) / l;
+  const p = (q: Pt, w: number, s: number) => `${f1(q[0] + (nx * w * s) / 2)} ${f1(q[1] + (ny * w * s) / 2 + dy)}`;
+  return `<g fill="${fill}"><path d="M${p(a, wa, 1)} L${p(b, wb, 1)} L${p(b, wb, -1)} L${p(a, wa, -1)} Z"/><circle cx="${f1(a[0])}" cy="${f1(a[1] + dy)}" r="${f1(wa / 2)}"/><circle cx="${f1(b[0])}" cy="${f1(b[1] + dy)}" r="${f1(wb / 2)}"/></g>`;
+}
+
+function limb(shoulder: Pt, elbow: Pt, wrist: Pt, t: Tone, onDesk = false): string {
+  const dx = wrist[0] - elbow[0];
+  const dy = wrist[1] - elbow[1];
+  const l = Math.hypot(dx, dy);
+  const hx = wrist[0] + (dx / l) * 6;
+  const hy = wrist[1] + (dy / l) * 6;
+  const ang = f1((Math.atan2(dy, dx) * 180) / Math.PI);
+  const cuff = (s: number) => `${f1(elbow[0] - (dy / l) * 6.5 * s)} ${f1(elbow[1] + (dx / l) * 6.5 * s)}`;
+  return `${onDesk ? `<ellipse cx="${f1(hx + 1)}" cy="${f1(hy + 7)}" rx="11" ry="3.2" fill="#000" opacity=".28"/>` : ''}
+    ${taper(elbow, wrist, 12.5, 9, t.skinShade, 2.2)}${taper(elbow, wrist, 11.5, 8, t.skin)}
+    <g transform="translate(${f1(hx)} ${f1(hy)}) rotate(${ang})">
+      <ellipse cx="0.8" cy="1.8" rx="8.6" ry="6.6" fill="${t.skinShade}"/>
+      <ellipse cx="0" cy="0" rx="8.2" ry="6.2" fill="${t.skin}"/>
+      <ellipse cx="-2.5" cy="-5.4" rx="3.6" ry="2.3" fill="${t.skin}" stroke="${t.skinShade}" stroke-width=".8" transform="rotate(-28 -2.5 -5.4)"/>
+      <ellipse cx="-0.5" cy="-2" rx="4.2" ry="1.6" fill="#fff" opacity=".2"/>
+    </g>
+    ${taper(shoulder, elbow, 17, 14, t.sleeveShade, 2.2)}${taper(shoulder, elbow, 16, 13, t.sleeve)}
+    <path d="M${cuff(1)} L${cuff(-1)}" stroke="${t.sleeveShade}" stroke-width="2.4" stroke-linecap="round"/>`;
 }
 
 function head(): string {
@@ -443,8 +496,10 @@ function deskArea(): string {
   ${box(7.68, 4.47, 1.32, 0.24, 0.24, 0.32, '#d9cdb8')}
   <path class="steam" d="M${P(7.8, 4.59, 1.7).map((n) => n.toFixed(1)).join(' ')}q6 -10 0 -18q-6 -8 0 -16" stroke="#cfd8e8" stroke-width="2" fill="none" opacity=".45"/>
   <g transform="${onPlaneZ(5.8, 5.8, 0.02)}"><ellipse cx="55" cy="55" rx="60" ry="60" fill="#0a1226" opacity=".7"/></g>
+  ${legs('lower')}
   ${box(6.25, 6.2, 0, 0.18, 0.18, 0.85, '#0e162b')}
   ${box(5.85, 5.85, 0.85, 1.0, 0.95, 0.16, '#22325a')}
+  ${legs('upper')}
   ${avatar()}
   ${box(5.9, 6.75, 1.0, 0.9, 0.14, 1.12, '#22325a')}
   ${head()}

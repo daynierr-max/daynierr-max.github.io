@@ -68,10 +68,13 @@ test.describe('Hotspots de la escena', () => {
     await page.goto('/');
     await hotspot(page, 'security').click();
     await expect(page.locator('#panel-body')).toContainText('Google Cybersecurity Professional Certificate');
+    await expect(panel(page)).toBeVisible(); // el texto se carga un instante antes de abrirse la hoja
     await page.keyboard.press('Escape');
+    await expect(panel(page)).toBeHidden();
     await hotspot(page, 'contact').click();
     await expect(page.locator('#panel-body').getByRole('link', { name: 'daynierr@gmail.com' })).toBeVisible();
     await page.keyboard.press('Escape');
+    await expect(panel(page)).toBeHidden();
     await hotspot(page, 'projects').click();
     await expect(page.locator('#panel-body').getByRole('link', { name: 'tradingview-mcp' })).toHaveAttribute(
       'href',

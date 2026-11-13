@@ -7,6 +7,31 @@
   aspect-ratio: 1400 / 1060;
   margin: 0 auto;
 }
+/* Zoom de cámara: al pulsar un objeto, la sala se acerca a él antes de abrir su hoja y se aleja al
+   cerrarla. Solo transform (GPU); valores en px calculados en main.ts. Sin zoom con reduced-motion. */
+.stage {
+  transform-origin: 0 0;
+  transition: transform 0.5s cubic-bezier(0.6, 0, 0.25, 1);
+}
+.stage.is-zoomed {
+  transform: translate(var(--zx, 0px), var(--zy, 0px)) scale(var(--zs, 1));
+}
+.hero-band:has(.stage.is-zoomed) {
+  overflow: clip;
+}
+.hero-band:has(.stage.is-zoomed) .stage-tilt {
+  transform: none;
+}
+.stage.is-zoomed .hs-label {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .stage.is-zoomed {
+    transition: none;
+    transform: none;
+  }
+}
 .scene-svg {
   position: absolute;
   inset: 0;

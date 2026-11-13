@@ -139,6 +139,9 @@ const canViewTransition = () =>
   typeof (document as VTDocument).startViewTransition === 'function' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
 const vtOrigin = (el: HTMLElement | null) => el?.querySelector<HTMLElement>('.app-icon, .hs-chip') ?? el;
 
+// Fin de la última transición de hoja: el zoom de vuelta espera a que la hoja regrese a su objeto.
+let vtDone: Promise<unknown> = Promise.resolve();
+
 function withTransition(from: HTMLElement | null, to: HTMLElement | null, update: () => void): void {
   if (!canViewTransition()) {
     update();
@@ -150,9 +153,39 @@ function withTransition(from: HTMLElement | null, to: HTMLElement | null, update
     update();
     if (to) to.style.viewTransitionName = 'sheet';
   });
+  vtDone = t.finished.catch(() => undefined);
   t.finished.finally(() => {
     if (to) to.style.viewTransitionName = '';
   });
+}
+
+// ── Zoom de cámara hacia el objeto pulsado en la sala ──
+const ZOOM = 1.5;
+const ZOOM_MS = 500; // igual que la transición de .stage en scene.css
+let zoomTimer = 0;
+
+/** Acerca la sala al hotspot. Devuelve los ms que hay que esperar antes de abrir la hoja (0 = sin zoom). */
+function zoomTo(hotspot: HTMLElement): number {
+  const stage = hotspot.closest<HTMLElement>('.stage');
+  if (!stage || matchMedia('(prefers-reduced-motion: reduce)').matches) return 0;
+  // Medidas sin transformar (offset*), para que una inclinación o un zoom previo no las falseen.
+  const w = stage.offsetWidth;
+  const h = stage.offsetHeight;
+  const cx = hotspot.offsetLeft + hotspot.offsetWidth / 2;
+  const cy = hotspot.offsetTop + hotspot.offsetHeight / 2;
+  const clamp = (v: number, min: number) => Math.min(0, Math.max(min, v));
+  // Centra el objeto sin dejar ver el vacío fuera de la sala.
+  stage.style.setProperty('--zx', `${clamp(w / 2 - ZOOM * cx, w - ZOOM * w).toFixed(1)}px`);
+  stage.style.setProperty('--zy', `${clamp(h / 2 - ZOOM * cy, h - ZOOM * h).toFixed(1)}px`);
+  stage.style.setProperty('--zs', String(ZOOM));
+  stage.classList.add('is-zoomed');
+  return ZOOM_MS;
+}
+
+function zoomOut(): void {
+  // Si mientras se cerraba ya se ha pulsado otro objeto (o hay otra hoja abierta), la cámara se queda.
+  if (zoomTimer || $<HTMLDialogElement>('#panel').open) return;
+  document.querySelector('.stage.is-zoomed')?.classList.remove('is-zoomed');
 }
 
 function openPanel(id: SectionId, trigger: HTMLElement): void {
@@ -201,8 +234,17 @@ function bind(): void {
     const t = e.target as HTMLElement;
     const opener = t.closest<HTMLElement>('[data-open]');
     if (opener) {
-      activate(opener.dataset.open, true);
-      openPanel(opener.dataset.open as SectionId, opener);
+      const id = opener.dataset.open as SectionId;
+      activate(id, true);
+      // Objetos de la sala: primero la cámara se acerca y luego se abre la hoja desde el objeto.
+      // La terminal se abre al instante (no se pierde lo que se teclee) y el zoom va por detrás.
+      const wait = opener.classList.contains('hotspot') && !zoomTimer ? zoomTo(opener) : 0;
+      if (wait && id !== 'terminal') {
+        zoomTimer = window.setTimeout(() => {
+          zoomTimer = 0;
+          openPanel(id, opener);
+        }, wait);
+      } else if (!zoomTimer) openPanel(id, opener);
       return;
     }
     if (t.closest('[data-read]')) {
@@ -268,6 +310,8 @@ function bind(): void {
       const dialog = e.target as HTMLDialogElement;
       activate(dialog.dataset.section, false);
       lastTrigger?.focus();
+      // La cámara se aleja cuando la hoja ya ha vuelto a su objeto.
+      void vtDone.then(zoomOut);
     },
     true,
   );

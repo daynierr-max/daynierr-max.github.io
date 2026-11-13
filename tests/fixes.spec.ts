@@ -25,6 +25,7 @@ test.describe('Un solo botón de PDF por vista', () => {
     expect(await visiblePdfLinks(page)).toBe(1); // «Obtener CV» del contacto
     await page.evaluate(() => scrollTo(0, 0));
     await page.locator('.hotspot[data-open="contact"]').click();
+    await expect(page.locator('#panel')).toBeVisible(); // se abre tras el zoom de cámara
     expect(await page.locator('#panel a[href$=".pdf"]').count()).toBe(0);
     await page.keyboard.press('Escape');
     await page.locator('[data-read]').click();
