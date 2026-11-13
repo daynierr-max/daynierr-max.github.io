@@ -225,3 +225,56 @@ test.describe('Capturas', () => {
     });
   }
 });
+
+test.describe('Zoom de cámara', () => {
+  test('al pulsar un objeto la sala se acerca, abre su hoja y se aleja al cerrar', async ({ page }) => {
+    await page.goto('/');
+    await band(page).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    const stage = page.locator('.stage');
+    await page.locator('.hotspot[data-open="security"]').click();
+    await expect(stage).toHaveClass(/is-zoomed/);
+    expect(await stage.evaluate((el) => el.style.getPropertyValue('--zs'))).toBe('1.5');
+    await expect(page.locator('#panel')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#panel')).toBeHidden();
+    await expect(stage).not.toHaveClass(/is-zoomed/);
+    await expect(page.locator('.hotspot[data-open="security"]')).toBeFocused();
+  });
+
+  test('la sala ampliada nunca deja ver el vacío fuera de ella', async ({ page }) => {
+    await page.goto('/');
+    await band(page).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    for (const id of ['infra', 'contact', 'certs']) {
+      await page.locator(`.hotspot[data-open="${id}"]`).click();
+      await expect(page.locator('#panel')).toBeVisible();
+      const z = await page.locator('.stage').evaluate((el: HTMLElement) => ({
+        x: parseFloat(el.style.getPropertyValue('--zx')),
+        y: parseFloat(el.style.getPropertyValue('--zy')),
+        w: el.offsetWidth,
+        h: el.offsetHeight,
+      }));
+      expect(z.x).toBeLessThanOrEqual(0);
+      expect(z.y).toBeLessThanOrEqual(0);
+      expect(z.x).toBeGreaterThanOrEqual(z.w - 1.5 * z.w - 0.5);
+      expect(z.y).toBeGreaterThanOrEqual(z.h - 1.5 * z.h - 0.5);
+      await page.keyboard.press('Escape');
+      await expect(page.locator('.stage')).not.toHaveClass(/is-zoomed/);
+    }
+  });
+
+  test('las apps de la estantería no hacen zoom en la sala', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('.app[data-open="projects"]').click();
+    await expect(page.locator('#panel')).toBeVisible();
+    await expect(page.locator('.stage')).not.toHaveClass(/is-zoomed/);
+  });
+
+  test('con reduced-motion no hay zoom y la hoja se abre al instante', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await band(page).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.locator('.hotspot[data-open="infra"]').click();
+    await expect(page.locator('#panel')).toBeVisible({ timeout: 200 });
+    await expect(page.locator('.stage')).not.toHaveClass(/is-zoomed/);
+  });
+});
