@@ -72,6 +72,9 @@ test.describe('Escena v2', () => {
   });
 
   test('ciclo 24 h: noche con estrellas y sin rayo; tarde con rayo por la ventana oeste', async ({ page }) => {
+    // Fecha fija de verano: en invierno, a las 18:30 el sol ya se ha puesto en Madrid y el test
+    // dependía del día en que se ejecutara.
+    await page.clock.setFixedTime(new Date('2026-06-21T10:00:00Z'));
     await page.goto('/');
     const state = () =>
       page.evaluate(() => ({
